@@ -7,11 +7,6 @@
 #include <functional>
 #include <glm/glm.hpp>
 
-using Vector2u = glm::uvec2;
-using Vector2f = glm::vec2;
-using Vector3f = glm::vec3;
-using Matrix4 = glm::mat4;
-
 class UniformVariable
 {
 public:
@@ -21,10 +16,10 @@ public:
     float operator=(float);
     uint32_t operator=(uint32_t);
     int32_t operator=(int32_t);
-    Vector2u operator=(const Vector2u &);
-    Vector2f operator=(const Vector2f &);
-    Vector3f operator=(const Vector3f &);
-    Matrix4 operator=(const Matrix4 &);
+    glm::uvec2 operator=(const glm::uvec2 &);
+    glm::vec2 operator=(const glm::vec2 &);
+    glm::vec3 operator=(const glm::vec3 &);
+    glm::mat4 operator=(const glm::mat4 &);
     UniformVariable &operator=(const UniformVariable &rhs)=default;
     bool valid() const;
 private:

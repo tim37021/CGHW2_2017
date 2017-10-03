@@ -43,8 +43,8 @@ int main(void)
     auto mesh1 = StaticMesh::LoadMesh("../resource/cube.obj");
     auto prog = Program::LoadFromFile("../resource/vs.txt", "../resource/fs.txt");
 
-    auto view = glm::lookAt(Vector3f{10.0f, 10.0f, 10.0f}, Vector3f{0.0f, 0.0f, 0.0f}, Vector3f{0.0f, 1.0f, 0.0f});
-    auto proj = glm::perspective(3.1415926f/4, 800.0f/600.0f, 0.1f, 100.f);
+    auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
+    auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
     prog["vp"] = proj*view;
 
     glEnable(GL_DEPTH_TEST);

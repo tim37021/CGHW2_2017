@@ -35,23 +35,23 @@ int32_t UniformVariable::operator=(int32_t val)
     glUniform1i(m_id, val);
     return val;
 }
-Vector2u UniformVariable::operator=(const Vector2u &v)
+glm::uvec2 UniformVariable::operator=(const glm::uvec2 &v)
 {
     glUniform2uiv(m_id, 1, glm::value_ptr(v));
     return v;
 }
-Vector2f UniformVariable::operator=(const Vector2f &v)
+glm::vec2 UniformVariable::operator=(const glm::vec2 &v)
 {
     glUniform2fv(m_id, 1, glm::value_ptr(v));
     return v;
 }
-Vector3f UniformVariable::operator=(const Vector3f &v)
+glm::vec3 UniformVariable::operator=(const glm::vec3 &v)
 {
     glUniform3fv(m_id, 1, glm::value_ptr(v));
     return v;
 }
 
-Matrix4 UniformVariable::operator=(const Matrix4 &v)
+glm::mat4 UniformVariable::operator=(const glm::mat4 &v)
 {
     // mat4 of glm is column major, same as opengl
     // we don't need to transpose it. so..GL_FALSE
