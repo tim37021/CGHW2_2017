@@ -46,6 +46,7 @@ int main(void)
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
     prog["vp"] = proj*view;
+    auto uniform_model = prog["model"];
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window))
@@ -54,7 +55,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         auto model = glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime())
             , glm::vec3(0.0f, 1.0f, 0.0f));
-        prog["model"] = model;
+        uniform_model = model;
         prog.use();
         mesh1.draw();
         ////////////////
