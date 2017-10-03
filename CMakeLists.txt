@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 2.8)
 
 set(GLEW_PATH "" CACHE STRING "GLEW path")
 set(GLFW_INC_PATH "" CACHE STRING "GLFW include path")
@@ -18,7 +18,6 @@ include_directories(".")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC -std=c++0x -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DGLEW_STATIC -std=c99")
 
-
 project(glew)
 set(GLEW_SOURCE ${GLEW_PATH}/src/glew.c)
 add_library(glew ${GLEW_SOURCE})
@@ -36,5 +35,14 @@ set(SOURCE_FILES ${SOURCE_FILES} "ShaderProgram.cpp")
 add_executable(cghw2 ${SOURCE_FILES})
 
 target_link_libraries(cghw2 glew)
+if(WIN32)
 target_link_libraries(cghw2 glfw3 gdi32 opengl32)
+endif()
+if(APPLE)
+target_link_libraries(cghw2 glfw3)
+target_link_libraries(cghw2 "-framework OpenGL")
+target_link_libraries(cghw2 "-framework Cocoa")
+target_link_libraries(cghw2 "-framework IOKit")
+target_link_libraries(cghw2 "-framework CoreVideo")
+endif()
 target_link_libraries(cghw2 tinyobjloader)
