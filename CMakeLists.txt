@@ -32,6 +32,7 @@ link_directories(${GLFW_LIB_PATH})
 
 set(SOURCE_FILES "main.cpp")
 set(SOURCE_FILES ${SOURCE_FILES} "ShaderProgram.cpp") 
+set(SOURCE_FILES ${SOURCE_FILES} "StaticMesh.cpp") 
 add_executable(cghw2 ${SOURCE_FILES})
 
 target_link_libraries(cghw2 glew)
