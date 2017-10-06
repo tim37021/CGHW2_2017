@@ -2,7 +2,7 @@
 Basic Rendering with Modern OpenGL
 
 ## Build Instruction
-This project needs four external libraries, glfw, glm, glew, tinyobjloader. tinyobjloader has been put into /ext directory. The remaining three need to be downloaded and built manually. 
+This project needs four external libraries, glfw, glm, glew, tinyobjloader. tinyobjloader has been put into /ext directory. The remaining three need to be downloaded and built manually. You also need cmake and git. Please install them before continuing.
 
 #### Build glm and glew
 
@@ -14,6 +14,11 @@ Enter the following command in /ext folder
 git clone https://github.com/glfw/glfw && cd glfw && mkdir build
 ```
 Use cmake to generate project file/makefile.
+
+Note that you might need additional headers to build glfw3 on linux
+```bash
+sudo apt-get install xorg-dev
+```
 
 ## Build CGHW2
 
