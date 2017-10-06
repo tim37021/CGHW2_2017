@@ -63,6 +63,14 @@ bool UniformVariable::valid() const
 {
     return m_id != -1;
 }
+
+static std::string read_file(const std::string &filename) 
+{
+	std::ifstream t(filename);
+	return std::string((std::istreambuf_iterator<char>(t)),
+		std::istreambuf_iterator<char>());
+}
+
 Program::Program(GLuint prog)
     : m_program(prog, [](GLuint id){glDeleteProgram(id);})
 {
@@ -71,18 +79,13 @@ Program::Program(GLuint prog)
 
 Program Program::LoadFromFile(const std::string &filename)
 {
-    std::ifstream t(filename);
-    std::string src((std::istreambuf_iterator<char>(t)),
-                     std::istreambuf_iterator<char>());
 
     GLuint shader=glCreateShader(GL_COMPUTE_SHADER);
-    int len = src.length();
+	auto src = read_file(filename);
+    int len = static_cast<int>(src.length());
     const char *c = src.c_str();
     glShaderSource(shader, 1, &c, &len);
     glCompileShader(shader);
-    char logs[1024];
-    len = 1024;
-    ::glGetShaderInfoLog(shader, 1024, &len, logs);
     GLuint id = glCreateProgram();
     glAttachShader(id, shader);
     glLinkProgram(id);
@@ -91,27 +94,19 @@ Program Program::LoadFromFile(const std::string &filename)
 
 Program Program::LoadFromFile(const std::string &vs, const std::string &fs)
 {
-    std::ifstream t(vs);
-    std::string vs_src((std::istreambuf_iterator<char>(t)),
-                     std::istreambuf_iterator<char>());
-
-    std::ifstream tt(fs);
-    std::string fs_src((std::istreambuf_iterator<char>(tt)),
-                    std::istreambuf_iterator<char>());
+	auto vs_src = ::read_file(vs);
+	auto fs_src = ::read_file(fs);
 
     GLuint vshader=glCreateShader(GL_VERTEX_SHADER);
     GLuint fshader=glCreateShader(GL_FRAGMENT_SHADER);
-    int len = vs_src.length();
+    int len = static_cast<int>(vs_src.length());
     const char *c = vs_src.c_str();
     glShaderSource(vshader, 1, &c, &len);
     glCompileShader(vshader);
-    len = fs_src.length();
+    len = static_cast<int>(fs_src.length());
     c = fs_src.c_str();
     glShaderSource(fshader, 1, &c, &len);
     glCompileShader(fshader);
-    char logs[1024];
-    len = 1024;
-    ::glGetShaderInfoLog(fshader, 1024, &len, logs);
     GLuint id = glCreateProgram();
     glAttachShader(id, vshader);
     glAttachShader(id, fshader);
