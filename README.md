@@ -25,5 +25,5 @@ Press Generate button and you will see the project file/makefile in build
 
 ## Note
 You MUST use the same compiler to build glfw and this project.
-Currently VC++ is not supported, but this issue will be fixed later.
+Currently VC++ is now supported
 Please don't copy and paste the commands I list here
