@@ -1,12 +1,28 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(GLEW_PATH "" CACHE STRING "GLEW path")
-set(GLFW_INC_PATH "" CACHE STRING "GLFW include path")
-set(GLFW_LIB_PATH "" CACHE STRING "GLFW lib path")
-set(GLM_PATH "" CACHE STRING "GLM path")
+macro(find_path_of_file ARG_VAR ARG_FILE RELATIVE_PATH DESC)
+if(NOT ${ARG_VAR})
+file(GLOB_RECURSE ${ARG_VAR}_TMP ${ARG_FILE})
+if(${ARG_VAR}_TMP)
+get_filename_component(${ARG_VAR}_PATH ${${ARG_VAR}_TMP} DIRECTORY)
+get_filename_component(${ARG_VAR} ${${ARG_VAR}_PATH}/${RELATIVE_PATH} ABSOLUTE)
+message(STATUS "${DESC} is found in ${${ARG_VAR}}")
+else()
+message("${DESC} not found, please specify the path or put it inside the ext/ folder.")
+set(${ARG_VAR} "" CACHE PATH "")
+endif()
+endif()
+endmacro()
+
+
+find_path_of_file(GLEW_PATH "${CMAKE_SOURCE_DIR}/ext/glew.pc.in" "./" "GLEW_PATH")
+find_path_of_file(GLFW_LIB_PATH "${CMAKE_SOURCE_DIR}/ext/libglfw3.a" "./" "GLFW_LIB_PATH")
+find_path_of_file(GLFW_INC_PATH "${CMAKE_SOURCE_DIR}/ext/glfw3.h" "../" "GLFW_INC_PATH")
+find_path_of_file(GLM_PATH "${CMAKE_SOURCE_DIR}/ext/glm.hpp" "../" "GLFW_INC_PATH")
 set(TINYOBJLOADER_PATH "ext/tinyobjloader")
 
-STRING(REGEX REPLACE "\\\\" "/" GLEW_PATH ${GLEW_PATH})
+#STRING(REGEX REPLACE "\\\\" "/" GLEW_PATH ${GLEW_PATH})
+#STRING(REGEX REPLACE "\\\\" "/" GLFW_PATH ${GLFW_PATH})
 
 # ext object loader
 include_directories(${GLFW_INC_PATH})
