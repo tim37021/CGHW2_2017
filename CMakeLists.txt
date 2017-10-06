@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 2.8)
 
+# Force C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+# Force C99
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
 macro(find_path_of_file ARG_VAR ARG_FILE RELATIVE_PATH DESC)
 if(NOT ${ARG_VAR})
 file(GLOB_RECURSE ${ARG_VAR}_TMP ${ARG_FILE})
@@ -31,12 +40,12 @@ include_directories(${GLEW_PATH}/include)
 include_directories(${TINYOBJLOADER_PATH})
 include_directories(".")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC -std=c++0x -g")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DGLEW_STATIC -std=c99")
 
 project(glew)
+
 set(GLEW_SOURCE ${GLEW_PATH}/src/glew.c)
 add_library(glew ${GLEW_SOURCE})
+target_compile_definitions(glew PRIVATE GLEW_STATIC)
 
 project(tinyobjloader)
 set(TOL ${TINYOBJLOADER_PATH}/tiny_obj_loader.cc)
@@ -50,6 +59,7 @@ set(SOURCE_FILES "main.cpp")
 set(SOURCE_FILES ${SOURCE_FILES} "ShaderProgram.cpp") 
 set(SOURCE_FILES ${SOURCE_FILES} "StaticMesh.cpp") 
 add_executable(cghw2 ${SOURCE_FILES})
+target_compile_definitions(cghw2 PRIVATE GLEW_STATIC)
 
 target_link_libraries(cghw2 glew)
 if(WIN32)
