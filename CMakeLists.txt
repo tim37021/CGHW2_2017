@@ -49,18 +49,11 @@ set(TINYOBJLOADER_PATH "ext/tinyobjloader")
 #STRING(REGEX REPLACE "\\\\" "/" GLEW_PATH ${GLEW_PATH})
 #STRING(REGEX REPLACE "\\\\" "/" GLFW_PATH ${GLFW_PATH})
 
-# ext object loader
-include_directories(${GLFW_INC_PATH})
-include_directories(${GLM_PATH})
-include_directories(${GLEW_PATH}/include)
-include_directories(${TINYOBJLOADER_PATH})
-include_directories(".")
-
-
 project(glew)
 
 set(GLEW_SOURCE ${GLEW_PATH}/src/glew.c)
 add_library(glew ${GLEW_SOURCE})
+target_include_directories(glew PRIVATE ${GLEW_PATH}/include)
 target_compile_definitions(glew PRIVATE GLEW_STATIC)
 
 project(tinyobjloader)
@@ -71,10 +64,12 @@ project(cghw2)
 
 link_directories(${GLFW_LIB_PATH})
 
-set(SOURCE_FILES "main.cpp")
-set(SOURCE_FILES ${SOURCE_FILES} "ShaderProgram.cpp") 
-set(SOURCE_FILES ${SOURCE_FILES} "StaticMesh.cpp") 
+file(GLOB SOURCE_FILES "*.cpp" "*.h")
 add_executable(cghw2 ${SOURCE_FILES})
+target_include_directories(cghw2 PRIVATE ${GLFW_INC_PATH})
+target_include_directories(cghw2 PRIVATE ${GLM_PATH})
+target_include_directories(cghw2 PRIVATE ${GLEW_PATH}/include)
+target_include_directories(cghw2 PRIVATE ${TINYOBJLOADER_PATH})
 target_compile_definitions(cghw2 PRIVATE GLEW_STATIC)
 
 target_link_libraries(cghw2 glew)
