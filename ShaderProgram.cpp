@@ -72,7 +72,7 @@ static std::string read_file(const std::string &filename)
 }
 
 Program::Program(GLuint prog)
-    : m_program(prog, [](GLuint id){glDeleteProgram(id);})
+    : m_program(prog)
 {
 
 }
@@ -120,17 +120,17 @@ Program Program::LoadFromFile(const std::string &vs, const std::string &fs)
 
 bool Program::valid() const
 {
-    return m_program.get()!=0;
+    return m_program!=0;
 }
 
 void Program::use() const
 {
-    glUseProgram(m_program.get());
+    glUseProgram(m_program);
 }
 
 void Program::dispatchCompute(uint32_t x, uint32_t y, uint32_t z) const
 {
-    glUseProgram(m_program.get());
+    glUseProgram(m_program);
     glDispatchCompute(x, y, z);
 }
 
@@ -141,8 +141,14 @@ UniformVariable &Program::operator[](const std::string &name)
     auto it = m_uniformVariables.find(name);
     if(it==m_uniformVariables.cend()) {
         auto &obj = m_uniformVariables[name];
-        obj = UniformVariable(glGetUniformLocation(m_program.get(), name.c_str()));
+        obj = UniformVariable(glGetUniformLocation(m_program, name.c_str()));
         return obj;
     } else
         return it->second;
+}
+
+void Program::release()
+{
+    glDeleteProgram(m_program);
+    m_program = 0;
 }

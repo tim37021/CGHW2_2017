@@ -46,6 +46,7 @@ int main(void)
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
     prog["vp"] = proj*view;
+    Program c = prog;
     auto uniform_model = prog["model"];
 
     glEnable(GL_DEPTH_TEST);
@@ -63,6 +64,7 @@ int main(void)
         glfwPollEvents();
     }
     mesh1.release();
+    prog.release();
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
