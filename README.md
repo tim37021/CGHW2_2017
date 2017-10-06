@@ -13,21 +13,15 @@ Enter the following command in /ext folder
 ```bash
 git clone https://github.com/glfw/glfw && cd glfw && mkdir build
 ```
-Use cmake to generate project file/makefile. If you like to use command line and build with MinGW Make(Suppose you are inside /ext/glfw/build)..., the following commands will generate MinGW makefiles and build.
-```bash
-cmake .. -G "MinGW Makefiles"
-mingw32-make
-```
+Use cmake to generate project file/makefile.
 
 ## Build CGHW2
 
-Make a new folder named build. and use cmake-gui targeting the path of this project. Press configure button. If you put all the dependancies in ext, you are done. Otherwire, GLEW_PATH, GLFW_INC_PATH, GLFW_LIB_PATH need to be specified. GLEW_PATH is the root path of glew. GLFW_INC_PATH is the include path of glfw. GLFW_LIB_PATH is the path where you can find libglfw3.a.
+Make a new folder named build. and use cmake-gui targeting the path of this project. Press configure button. If you put all the dependancies in ext, you are done because cmake will find all the necessary files in ext autometically. Otherwise, GLEW_PATH, GLFW_INC_PATH, GLFW_LIB_PATH need to be specified. GLEW_PATH is the root path of glew. GLFW_INC_PATH is the include path of glfw. GLFW_LIB_PATH is the path where you can find libglfw3.a.
+![](/images/cmake_cghw2.png)
 
-Generate... and make.... finally you will see cghw2.exe
+Press Generate button and you will see the project file/makefile in build
 
-```bash
-cd build && mingw32-make && ./cghw2.exe
-```
 
 ## Note
 You MUST use the same compiler to build glfw and this project.
