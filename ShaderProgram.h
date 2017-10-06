@@ -11,7 +11,7 @@ class UniformVariable
 {
 public:
     UniformVariable();
-    UniformVariable(GLint id);
+    explicit UniformVariable(GLint id);
     UniformVariable(const UniformVariable &rhs);
     float operator=(float);
     uint32_t operator=(uint32_t);
