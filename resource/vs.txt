@@ -10,10 +10,12 @@ uniform mat4 vp;
 
 // 'out' means vertex shader output for fragment shader
 out vec3 vNormal;
+out vec2 vUV;
 
 void main()
 {
 	vNormal = vec3(model * vec4(normal, 0.0));
+	vUV = texcoord;
 	
 	gl_Position=vp*model*vec4(position, 1.0);
 }

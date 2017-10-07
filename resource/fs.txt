@@ -4,9 +4,12 @@
 // If you create framebuffer your own, you need to take care of it
 layout(location=0) out vec4 color;
 
+uniform sampler2D text;
+
 in vec3 vNormal;
+in vec2 vUV;
 
 void main()
 {
-	color=vec4(vNormal, 1.0);
+	color=texture(text, vUV);
 }

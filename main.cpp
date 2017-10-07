@@ -1,17 +1,18 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cstdlib>
-#include <cstdio>
+#include <iostream>
 #include <string>
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "ShaderProgram.h"
 #include "StaticMesh.h"
+#include "Texture.h"
 
 static void error_callback(int error, const char* description)
 {
-    fputs(description, stderr);
+    std::cerr<<description<<"\n";
 }
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -42,10 +43,18 @@ int main(void)
 
     auto mesh1 = StaticMesh::LoadMesh("../resource/cube.obj");
     auto prog = Program::LoadFromFile("../resource/vs.txt", "../resource/fs.txt");
+	auto text = Texture2D::LoadFromFile("../resource/brick.png");
+	// Remove this line and see the difference
+	text.setFilter(FilterMode::eNearestMipmapLinear, FilterMode::eLinear);
+
+	if (!mesh1.hasUV()) {
+		std::cerr<<"WARNING: The mesh has no UV data\n";
+	}
 
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
     prog["vp"] = proj*view;
+	prog["text"] = 0;
     auto uniform_model = prog["model"];
 
     glEnable(GL_DEPTH_TEST);
@@ -57,6 +66,7 @@ int main(void)
             , glm::vec3(0.0f, 1.0f, 0.0f));
         uniform_model = model;
         prog.use();
+		text.bindToChannel(0);
         mesh1.draw();
         ////////////////
         glfwSwapBuffers(window);
@@ -64,6 +74,7 @@ int main(void)
     }
     mesh1.release();
     prog.release();
+	text.release();
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
