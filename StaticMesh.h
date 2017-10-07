@@ -9,11 +9,16 @@ public:
 
     static StaticMesh LoadMesh(const std::string &filename);
     void draw();
+
+	bool hasNormal() const;
+	bool hasUV() const;
 private:
     GLuint vao;
     GLuint vbo[3];
     GLuint ibo;
     GLuint numIndices;
+
+	bool m_uv, m_normal;
 };
 
 #endif

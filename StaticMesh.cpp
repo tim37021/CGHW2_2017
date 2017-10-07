@@ -44,6 +44,7 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
             shapes[0].mesh.texcoords.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		ret.m_uv = true;
     }
 
     if (shapes[0].mesh.normals.size() > 0) {
@@ -54,6 +55,7 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
 
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		ret.m_normal = true;
     }
 
     // Setup index buffer for glDrawElements
@@ -79,4 +81,14 @@ void StaticMesh::draw()
 {
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
+}
+
+bool StaticMesh::hasNormal() const
+{
+	return m_normal;
+}
+
+bool StaticMesh::hasUV() const 
+{
+	return m_uv;
 }
