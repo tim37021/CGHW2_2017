@@ -66,7 +66,7 @@ int main(void)
             , glm::vec3(0.0f, 1.0f, 0.0f));
         uniform_model = model;
         prog.use();
-		text.bindToChannel(0);
+        text.bindToChannel(0);
         mesh1.draw();
         ////////////////
         glfwSwapBuffers(window);
