@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+project(cghw2)
+
 # Force C++11
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,6 +35,8 @@ function(find_path_of_file ARG_VAR RELATIVE_PATH DESC ARG_FILE)
 			set(${ARG_VAR} "" CACHE PATH "")
 			message(FATAL_ERROR "${DESC} not found, please specify the path or put it inside the ext/ folder.")
 		endif()
+	else()
+		message(STATUS "${DESC} is found in ${${ARG_VAR}}")
 	endif()
 endfunction()
 
@@ -66,10 +70,9 @@ set(LPNG ${LODEPNG_PATH}/lodepng.cpp)
 add_library(lodepng ${LPNG})
 target_include_directories(lodepng PRIVATE ${LODEPNG_PATH})
 
+# cghw2
 project(cghw2)
-
 link_directories(${GLFW_LIB_PATH})
-
 file(GLOB SOURCE_FILES "*.cpp" "*.h")
 add_executable(cghw2 ${SOURCE_FILES})
 target_include_directories(cghw2 PRIVATE ${GLFW_INC_PATH})
@@ -80,6 +83,8 @@ target_include_directories(cghw2 PRIVATE ${LODEPNG_PATH})
 target_compile_definitions(cghw2 PRIVATE GLEW_STATIC)
 
 target_link_libraries(cghw2 glew)
+
+
 if(WIN32)
 	target_link_libraries(cghw2 glfw3 gdi32 opengl32)
 endif()
