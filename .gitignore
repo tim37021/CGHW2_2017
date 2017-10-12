@@ -1,4 +1,4 @@
-﻿build/*
+﻿build*/
 ext/
 CMakeCache.txt
 CMakeFiles/
