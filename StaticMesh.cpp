@@ -1,6 +1,12 @@
 #include "StaticMesh.h"
 #include <tiny_obj_loader.h>
 
+StaticMesh::StaticMesh()
+    : m_uv(false), m_normal(false)
+{
+
+}
+
 StaticMesh StaticMesh::LoadMesh(const std::string &filename)
 {
 

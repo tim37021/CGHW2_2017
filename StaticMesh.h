@@ -13,6 +13,7 @@ public:
 	bool hasNormal() const;
 	bool hasUV() const;
 private:
+    StaticMesh();
     GLuint vao;
     GLuint vbo[3];
     GLuint ibo;
