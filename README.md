@@ -2,33 +2,53 @@
 Basic Rendering with Modern OpenGL
 
 ## Build Instruction
-This project needs four external libraries, glfw, glm, glew, tinyobjloader. tinyobjloader has been put into /ext directory. The remaining three need to be downloaded and built manually. You also need cmake and git. Please install them before continuing.
+This project needs five external libraries, glfw, glm, glew, tinyobjloader, lodepng. tinyobjloader and lodepng have been put into /ext directory. The remaining three need to be downloaded and built manually, since they are updated frequently. For following instruction, you will need cmake and git. Please install them before continuing.
 
-#### Build glm and glew
 
-Simply go to their offical website and download the latest version. Uncompress and put them in /ext.
 
-#### Build glfw
-Enter the following command in /ext folder
-```bash
-git clone https://github.com/glfw/glfw && cd glfw && mkdir build
-```
-Use cmake to generate project file/makefile.
+#### Step 1: Download External Libraries
 
-Note that you might need additional headers to build glfw3 on linux
-```bash
-sudo apt-get install xorg-dev
-```
+Simply go to their offical website and download the latest version. 
 
-## Build CGHW2
+* glew (Uncompress and put in /ext)
+    http://glew.sourceforge.net/
+* glm (Uncompress and put in /ext)
+    https://github.com/g-truc/glm/tags
+* glfw (Enter the following command in /ext)
+    ```bash
+    git clone https://github.com/glfw/glfw
+    ```
+   (Linux Only!!!)Install Package for GLFW
+   ```bash
+   sudo apt-get install xorg-dev
+   ```
 
-Make a new folder named build. and use cmake-gui targeting the path of this project. Press configure button. If you put all the dependancies in ext, you are done because cmake will find all the necessary files in ext autometically. Otherwise, GLEW_PATH, GLFW_INC_PATH, GLFW_LIB_PATH need to be specified. GLEW_PATH is the root path of glew. GLFW_INC_PATH is the include path of glfw. GLFW_LIB_PATH is the path where you can find libglfw3.a.
-![](/images/cmake_cghw2.png)
+#### Step 2: CMake
+1. At root directory of this repo. Make a new folder which has name start with "build". For example build_mingw or build_msvc
+    ```bash
+    # Don't copy me please...
+    mkdir build_mingw
+   ```
+   
+2. Open cmake-gui and follow the steps in the figure.
+![](/images/cmake.png)
+This dialog wants you to choose an IDE(Compiler/Build Tool). You may want to choose "Unix Makefiles" in Linux-like or MacOSX. I normally use mingw-gcc and Visual Studio, so my selections are "MinGW Makefiles" and "Visual Studio 14 2015 Win64"
+![](/images/generator.png)
 
-Press Generate button and you will see the project file/makefile in build
+#### Step 3: Build & Run
 
+After you press generate button, there will be a project file/makefile in the build folder. You can use IDE to open it(*.sln file) or use "make" to build.
+The following are the corressponding build commands for different makefiles generators. If you use IDE, you can skip this.
+* Unix Makefiles
+    ```bash
+    make
+    ```
+* MinGW Makefiles
+    ```bash
+    mingw32-make
+    ```
 
 ## Note
-You MUST use the same compiler to build glfw and this project.
-Currently VC++ is now supported
-Please don't copy and paste the commands I list here
+* If you want to add additional cpp files, simply re-cmake in build folder. It will adject Makefiles/Projectfiles autometically.
+* Well support for all platforms (Mac OS X, Linux, Windows) and IDEs/Compilers (xcode, codeblocks, visual studio). 
+* Please don't copy and paste the commands I list here. Try to understand it.
