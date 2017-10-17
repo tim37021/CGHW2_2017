@@ -31,8 +31,11 @@ Simply go to their offical website and download the latest version.
    ```
    
 2. Open cmake-gui and follow the steps in the figure.
+
 ![](/images/cmake.png)
+
 This dialog wants you to choose an IDE(Compiler/Build Tool). You may want to choose "Unix Makefiles" in Linux-like or MacOSX. I normally use mingw-gcc and Visual Studio, so my selections are "MinGW Makefiles" and "Visual Studio 14 2015 Win64"
+
 ![](/images/generator.png)
 
 #### Step 3: Build & Run
