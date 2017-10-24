@@ -53,6 +53,7 @@ void Texture2D::release()
 
 void Texture2D::setFilter(FilterMode min, FilterMode mag)
 {
+    glBindTexture(GL_TEXTURE_2D, m_id);
     // if mipmapping is required, generate it
     if (min >= FilterMode::eNearestMipmapLinear) {
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -63,7 +64,6 @@ void Texture2D::setFilter(FilterMode min, FilterMode mag)
         mag = FilterMode::eNearest;
     }
 
-    glBindTexture(GL_TEXTURE_2D, m_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterModeOpenGLMapping[static_cast<uint32_t>(min)]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterModeOpenGLMapping[static_cast<uint32_t>(mag)]);
 }
