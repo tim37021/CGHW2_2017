@@ -41,15 +41,11 @@ This dialog wants you to choose an IDE(Compiler/Build Tool). You may want to cho
 #### Step 3: Build & Run
 
 After you press generate button, there will be a project file/makefile in the build folder. You can use IDE to open it(*.sln file) or use "make" to build.
-The following are the corressponding build commands for different makefiles generators. If you use IDE, you can skip this.
-* Unix Makefiles
-    ```bash
-    make
-    ```
-* MinGW Makefiles
-    ```bash
-    mingw32-make
-    ```
+The following is the universal build command for different makefiles generators. This command can also be used to build Visual Studio project
+
+```bash
+cmake --build .
+```
 
 ## Note
 * If you want to add additional cpp files, simply re-cmake in build folder. It will adject Makefiles/Projectfiles autometically.
