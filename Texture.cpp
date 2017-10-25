@@ -1,5 +1,6 @@
 #include "Texture.h"
 #include <lodepng.h>
+#include <cstdint>
 
 // Reference https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glTexParameter.xhtml
 
