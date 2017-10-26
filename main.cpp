@@ -9,6 +9,7 @@
 #include "ShaderProgram.h"
 #include "StaticMesh.h"
 #include "Texture.h"
+#include "Axis.h"
 
 static void error_callback(int error, const char* description)
 {
@@ -53,11 +54,16 @@ int main(void)
 
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
-    prog["vp"] = proj*view;
+    auto vp = prog["vp"] = proj*view;
     prog["text"] = 0;
     auto uniform_model = prog["model"];
 
+
+    Axis axis(7.0f);
     glEnable(GL_DEPTH_TEST);
+
+    Line l;
+    l.set(glm::vec3(1, 5, 0), glm::vec3(5, 5, 5));
     while (!glfwWindowShouldClose(window))
     {
         // draw
@@ -65,6 +71,8 @@ int main(void)
         auto model = glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime())
             , glm::vec3(0.0f, 1.0f, 0.0f));
         uniform_model = model;
+        axis.draw(vp);
+        l.draw(vp);
         prog.use();
         text.bindToChannel(0);
         mesh1.draw();

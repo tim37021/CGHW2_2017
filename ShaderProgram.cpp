@@ -91,7 +91,7 @@ Program Program::LoadFromFile(const std::string &filename)
     glLinkProgram(id);
     return Program(id);
 }
-
+#include <iostream>
 Program Program::LoadFromFile(const std::string &vs, const std::string &fs)
 {
 	auto vs_src = ::read_file(vs);
@@ -103,6 +103,9 @@ Program Program::LoadFromFile(const std::string &vs, const std::string &fs)
     const char *c = vs_src.c_str();
     glShaderSource(vshader, 1, &c, &len);
     glCompileShader(vshader);
+    char lg[1024];
+    glGetShaderInfoLog(vshader, 1024, &len, lg);
+    std::cerr<<lg;
     len = static_cast<int>(fs_src.length());
     c = fs_src.c_str();
     glShaderSource(fshader, 1, &c, &len);

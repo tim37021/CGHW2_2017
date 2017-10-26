@@ -1,0 +1,9 @@
+#version 330
+uniform mat4 vp;
+
+uniform vec3 data[2];
+
+void main()
+{	
+	gl_Position=vp * vec4(data[gl_VertexID], 1.0);
+}
