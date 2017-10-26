@@ -8,51 +8,51 @@ UniformVariable::UniformVariable()
 {
 
 }
-UniformVariable::UniformVariable(GLint id)
-    : m_id(id)
+UniformVariable::UniformVariable(const GLuint program, GLint id)
+    : m_program(program), m_id(id)
 {
 
 }
-
-UniformVariable::UniformVariable(const UniformVariable &rhs)
-    : m_id(rhs.m_id)
-{
-    
-}
-
 float UniformVariable::operator=(float val)
 {
+    glUseProgram(m_program);
     glUniform1f(m_id, val);
     return val;
 }
 uint32_t UniformVariable::operator=(uint32_t val)
 {
+    glUseProgram(m_program);
     glUniform1ui(m_id, val);
     return val;
 }
 int32_t UniformVariable::operator=(int32_t val)
 {
+    glUseProgram(m_program);
     glUniform1i(m_id, val);
     return val;
 }
 glm::uvec2 UniformVariable::operator=(const glm::uvec2 &v)
 {
+    glUseProgram(m_program);
     glUniform2uiv(m_id, 1, glm::value_ptr(v));
     return v;
 }
 glm::vec2 UniformVariable::operator=(const glm::vec2 &v)
 {
+    glUseProgram(m_program);
     glUniform2fv(m_id, 1, glm::value_ptr(v));
     return v;
 }
 glm::vec3 UniformVariable::operator=(const glm::vec3 &v)
 {
+    glUseProgram(m_program);
     glUniform3fv(m_id, 1, glm::value_ptr(v));
     return v;
 }
 
 glm::mat4 UniformVariable::operator=(const glm::mat4 &v)
 {
+    glUseProgram(m_program);
     // mat4 of glm is column major, same as opengl
     // we don't need to transpose it. so..GL_FALSE
     glUniformMatrix4fv(m_id, 1, GL_FALSE, glm::value_ptr(v));
@@ -141,7 +141,7 @@ UniformVariable &Program::operator[](const std::string &name)
     auto it = m_uniformVariables.find(name);
     if(it==m_uniformVariables.cend()) {
         auto &obj = m_uniformVariables[name];
-        obj = UniformVariable(glGetUniformLocation(m_program, name.c_str()));
+        obj = UniformVariable(m_program, glGetUniformLocation(m_program, name.c_str()));
         return obj;
     } else
         return it->second;

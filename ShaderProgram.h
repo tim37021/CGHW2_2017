@@ -11,8 +11,8 @@ class UniformVariable
 {
 public:
     UniformVariable();
-    explicit UniformVariable(GLint id);
-    UniformVariable(const UniformVariable &rhs);
+    explicit UniformVariable(GLuint program, GLint id);
+    UniformVariable(const UniformVariable &rhs)=default;
     float operator=(float);
     uint32_t operator=(uint32_t);
     int32_t operator=(int32_t);
@@ -23,6 +23,7 @@ public:
     UniformVariable &operator=(const UniformVariable &rhs)=default;
     bool valid() const;
 private:
+    GLuint m_program;
     GLint m_id;
 };
 
