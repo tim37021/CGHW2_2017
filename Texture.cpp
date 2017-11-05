@@ -11,6 +11,21 @@ static GLenum FilterModeOpenGLMapping[] =
 { GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_NEAREST_MIPMAP_NEAREST, 
 GL_LINEAR_MIPMAP_NEAREST };
 
+static GLenum ColorTypeOpenGLMapping[] = 
+{ GL_R8, GL_RG8, GL_RGB8, GL_RGBA8 };
+
+Texture2D::Texture2D(uint32_t width, uint32_t height, ColorType type)
+    : m_width(width), m_height(height)
+{
+    glGenTextures(1, &m_id);
+    glBindTexture(GL_TEXTURE_2D, m_id);
+    glTexStorage2D(GL_TEXTURE_2D, 1, ColorTypeOpenGLMapping[static_cast<uint32_t>(type)], width, height);
+    //glTexImage2D(GL_TEXTURE_2D, 0, ColorTypeOpenGLMapping[static_cast<uint32_t>(type)], width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    m_mipmap = false;
+    setFilter(FilterMode::eNearest, FilterMode::eNearest);
+    setWrap(WrapMode::eRepeat, WrapMode::eRepeat);
+}
+
 Texture2D Texture2D::LoadFromFile(const std::string & pngfile)
 {
     // load png and decode into raw data
@@ -30,6 +45,8 @@ Texture2D Texture2D::LoadFromFile(const std::string & pngfile)
     ret.m_mipmap = false;
     ret.setFilter(FilterMode::eNearest, FilterMode::eNearest);
     ret.setWrap(WrapMode::eRepeat, WrapMode::eRepeat);
+    ret.m_width = width;
+    ret.m_height = height;
     return ret;
 }
 

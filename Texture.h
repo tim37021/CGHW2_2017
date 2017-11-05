@@ -2,6 +2,7 @@
 #define _TEXTURE_H_
 
 #include <GL/glew.h>
+#include <cstdint>
 #include <string>
 
 enum class WrapMode {
@@ -11,6 +12,11 @@ enum class WrapMode {
 enum class FilterMode {
     eNearest, eLinear, eNearestMipmapLinear, eLinearMipmapLinear, eNearestMipmapNearest, eLinearMipmapNearest
 };
+
+enum class ColorType {
+    eRed, eRG, eRGB, eRGBA
+};
+
 
 class ITexture {
 public:
@@ -23,6 +29,7 @@ public:
 
 class Texture2D : public ITexture {
 public:
+    Texture2D(uint32_t width, uint32_t height, ColorType type=ColorType::eRGBA);
     static Texture2D LoadFromFile(const std::string &pngfile);
 
     virtual void bindToChannel(GLuint channel) override;
@@ -31,9 +38,13 @@ public:
     virtual void release() override;
     virtual bool hasMipmap() override;
 
+    GLuint id() const
+    { return m_id; }
+
 private:
     Texture2D(GLuint id);
     GLuint m_id;
+    uint32_t m_width, m_height;
     bool m_mipmap;
 };
 
