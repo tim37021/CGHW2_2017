@@ -34,6 +34,7 @@ public:
     Program(const Program &)=default;
     static Program LoadFromFile(const std::string &filename);
     static Program LoadFromFile(const std::string &vs, const std::string &fs);
+    static Program LoadFromFile(const std::string &vs, const std::string &gs, const std::string &fs);
     UniformVariable &operator[](const std::string &);
 
     bool valid() const;

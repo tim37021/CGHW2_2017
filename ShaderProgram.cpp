@@ -120,6 +120,45 @@ Program Program::LoadFromFile(const std::string &vs, const std::string &fs)
     return Program(id);
 }
 
+#include <iostream>
+Program Program::LoadFromFile(const std::string &vs, const std::string &gs, const std::string &fs)
+{
+    auto vs_src = ::read_file(vs);
+    auto gs_src = ::read_file(gs);
+	auto fs_src = ::read_file(fs);
+
+    GLuint vshader=glCreateShader(GL_VERTEX_SHADER);
+    GLuint gshader=glCreateShader(GL_GEOMETRY_SHADER);
+    GLuint fshader=glCreateShader(GL_FRAGMENT_SHADER);
+    int len = static_cast<int>(vs_src.length());
+    const char *c = vs_src.c_str();
+    glShaderSource(vshader, 1, &c, &len);
+    glCompileShader(vshader);
+    char lg[1024];
+    glGetShaderInfoLog(vshader, 1024, &len, lg);
+    std::cerr<<lg;
+
+    len = static_cast<int>(gs_src.length());
+    c = gs_src.c_str();
+    glShaderSource(gshader, 1, &c, &len);
+    glCompileShader(gshader);
+
+    len = static_cast<int>(fs_src.length());
+    c = fs_src.c_str();
+    glShaderSource(fshader, 1, &c, &len);
+    glCompileShader(fshader);
+    GLuint id = glCreateProgram();
+    glAttachShader(id, vshader);
+    glAttachShader(id, gshader);
+    glAttachShader(id, fshader);
+    glLinkProgram(id);
+
+    glDeleteShader(vshader);
+    glDeleteShader(fshader);
+    return Program(id);
+}
+
+
 
 bool Program::valid() const
 {
