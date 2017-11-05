@@ -1,0 +1,55 @@
+#version 330
+#pragma shader_stage(geometry)
+
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
+
+in vec3 vPos[];
+in vec3 vNormal[];
+in vec2 vUV[];
+
+out vec3 gPos;
+out vec3 gNormal;
+out vec2 gUV;
+
+uniform int calcFlatNormal = 1;
+
+void main()
+{
+	vec3 flatNormal;
+	if(calcFlatNormal==1) {
+		vec3 oa = vPos[1]-vPos[0];
+		vec3 ob = vPos[2]-vPos[0];
+		flatNormal = normalize(cross(oa, ob));
+	}
+
+	gPos = vPos[0];
+	if(calcFlatNormal==1)
+		gNormal = flatNormal;
+	else
+		gNormal = vNormal[0];
+	gUV = vUV[0];
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+
+	gPos = vPos[1];
+	if(calcFlatNormal==1)
+		gNormal = flatNormal;
+	else
+		gNormal = vNormal[1];
+	gUV = vUV[1];
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+
+	gPos = vPos[2];
+	if(calcFlatNormal==1)
+		gNormal = flatNormal;
+	else
+		gNormal = vNormal[1];
+	gUV = vUV[2];
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+
+    EndPrimitive();
+}

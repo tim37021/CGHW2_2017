@@ -11,6 +11,8 @@
 #include "Texture.h"
 #include "Axis.h"
 
+int calcFlat = 0;
+
 static void error_callback(int error, const char* description)
 {
     std::cerr<<description<<"\n";
@@ -19,6 +21,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS)
+        calcFlat = !calcFlat;
+
 }
 
 int main(void)
@@ -42,8 +48,8 @@ int main(void)
     glewExperimental = GL_TRUE;
     glewInit();
 
-    auto mesh1 = StaticMesh::LoadMesh("../resource/cube.obj");
-    auto prog = Program::LoadFromFile("../resource/vs.txt", "../resource/fs.txt");
+    auto mesh1 = StaticMesh::LoadMesh("../resource/sphere.obj");
+    auto prog = Program::LoadFromFile("../resource/vs.txt", "../resource/gs.txt", "../resource/fs.txt");
 	auto text = Texture2D::LoadFromFile("../resource/brick.png");
 	// Remove this line and see the difference
 	text.setFilter(FilterMode::eNearestMipmapLinear, FilterMode::eLinear);
@@ -74,6 +80,7 @@ int main(void)
         axis.draw(vp);
         l.draw(vp);
         prog.use();
+        prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
         mesh1.draw();
         ////////////////
