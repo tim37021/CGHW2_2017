@@ -44,6 +44,7 @@ public:
 
     void release();
 private:
+    static GLuint CreateShader(GLenum type, const std::string &src);
     Program(GLuint prog);
     std::map<std::string, UniformVariable> m_uniformVariables;
     GLuint m_program;

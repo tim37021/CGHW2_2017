@@ -2,6 +2,10 @@
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <stdexcept>
 
 UniformVariable::UniformVariable()
     : m_id(0)
@@ -79,45 +83,44 @@ Program::Program(GLuint prog)
 
 Program Program::LoadFromFile(const std::string &filename)
 {
+    auto cs_src = ::read_file(filename);
 
-    GLuint shader=glCreateShader(GL_COMPUTE_SHADER);
-	auto src = read_file(filename);
-    int len = static_cast<int>(src.length());
-    const char *c = src.c_str();
-    glShaderSource(shader, 1, &c, &len);
-    glCompileShader(shader);
-    GLuint id = glCreateProgram();
-    glAttachShader(id, shader);
-    glLinkProgram(id);
-    return Program(id);
+    try{
+        GLuint cshader = CreateShader(GL_COMPUTE_SHADER, cs_src);
+
+        GLuint id = glCreateProgram();
+        glAttachShader(id, cshader);
+        glLinkProgram(id);
+    
+        glDeleteShader(cshader);
+        return Program(id);
+    } catch(std::exception &e) {
+        std::cerr<<e.what();
+        return Program(0);
+    }
 }
 #include <iostream>
 Program Program::LoadFromFile(const std::string &vs, const std::string &fs)
 {
-	auto vs_src = ::read_file(vs);
+    auto vs_src = ::read_file(vs);
 	auto fs_src = ::read_file(fs);
 
-    GLuint vshader=glCreateShader(GL_VERTEX_SHADER);
-    GLuint fshader=glCreateShader(GL_FRAGMENT_SHADER);
-    int len = static_cast<int>(vs_src.length());
-    const char *c = vs_src.c_str();
-    glShaderSource(vshader, 1, &c, &len);
-    glCompileShader(vshader);
-    char lg[1024];
-    glGetShaderInfoLog(vshader, 1024, &len, lg);
-    std::cerr<<lg;
-    len = static_cast<int>(fs_src.length());
-    c = fs_src.c_str();
-    glShaderSource(fshader, 1, &c, &len);
-    glCompileShader(fshader);
-    GLuint id = glCreateProgram();
-    glAttachShader(id, vshader);
-    glAttachShader(id, fshader);
-    glLinkProgram(id);
+    try{
+        GLuint vshader = CreateShader(GL_VERTEX_SHADER, vs_src);
+        GLuint fshader = CreateShader(GL_FRAGMENT_SHADER, fs_src);
 
-    glDeleteShader(vshader);
-    glDeleteShader(fshader);
-    return Program(id);
+        GLuint id = glCreateProgram();
+        glAttachShader(id, vshader);
+        glAttachShader(id, fshader);
+        glLinkProgram(id);
+    
+        glDeleteShader(vshader);
+        glDeleteShader(fshader);
+        return Program(id);
+    } catch(std::exception &e) {
+        std::cerr<<e.what();
+        return Program(0);
+    }
 }
 
 #include <iostream>
@@ -127,37 +130,60 @@ Program Program::LoadFromFile(const std::string &vs, const std::string &gs, cons
     auto gs_src = ::read_file(gs);
 	auto fs_src = ::read_file(fs);
 
-    GLuint vshader=glCreateShader(GL_VERTEX_SHADER);
-    GLuint gshader=glCreateShader(GL_GEOMETRY_SHADER);
-    GLuint fshader=glCreateShader(GL_FRAGMENT_SHADER);
-    int len = static_cast<int>(vs_src.length());
-    const char *c = vs_src.c_str();
-    glShaderSource(vshader, 1, &c, &len);
-    glCompileShader(vshader);
-    char lg[1024];
-    glGetShaderInfoLog(vshader, 1024, &len, lg);
-    std::cerr<<lg;
+    try{
+        GLuint vshader = CreateShader(GL_VERTEX_SHADER, vs_src);
+        GLuint gshader = CreateShader(GL_GEOMETRY_SHADER, gs_src);
+        GLuint fshader = CreateShader(GL_FRAGMENT_SHADER, fs_src);
 
-    len = static_cast<int>(gs_src.length());
-    c = gs_src.c_str();
-    glShaderSource(gshader, 1, &c, &len);
-    glCompileShader(gshader);
-
-    len = static_cast<int>(fs_src.length());
-    c = fs_src.c_str();
-    glShaderSource(fshader, 1, &c, &len);
-    glCompileShader(fshader);
-    GLuint id = glCreateProgram();
-    glAttachShader(id, vshader);
-    glAttachShader(id, gshader);
-    glAttachShader(id, fshader);
-    glLinkProgram(id);
-
-    glDeleteShader(vshader);
-    glDeleteShader(fshader);
-    return Program(id);
+        GLuint id = glCreateProgram();
+        glAttachShader(id, vshader);
+        glAttachShader(id, gshader);
+        glAttachShader(id, fshader);
+        glLinkProgram(id);
+    
+        glDeleteShader(vshader);
+        glDeleteShader(gshader);
+        glDeleteShader(fshader);
+        return Program(id);
+    } catch(std::exception &e) {
+        std::cerr<<e.what();
+        return Program(0);
+    }
 }
 
+GLuint Program::CreateShader(GLenum type, const std::string &src) 
+{
+    GLuint id=glCreateShader(type);
+    int len = static_cast<int>(src.length());
+    const char *c = src.c_str();
+    glShaderSource(id, 1, &c, &len);
+    glCompileShader(id);
+
+    int status;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &status);
+    if(status != GL_TRUE) {
+        const char *shader_type;
+        switch(type) {
+            case GL_VERTEX_SHADER:
+                shader_type = "VS:"; break;
+            case GL_GEOMETRY_SHADER:
+                shader_type = "GS:"; break; 
+            case GL_FRAGMENT_SHADER:
+                shader_type = "FS:"; break;
+            case GL_COMPUTE_SHADER:
+                shader_type = "CS:"; break;
+            
+        }
+        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &len);
+        
+        std::vector<char> err_str(len);
+        glGetShaderInfoLog(id, len, &len, err_str.data());
+        glDeleteShader(id);
+        throw std::runtime_error(std::string(shader_type)+err_str.data());
+    }
+
+    return id;
+}
 
 
 bool Program::valid() const
