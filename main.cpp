@@ -11,6 +11,7 @@
 #include "Texture.h"
 #include "Axis.h"
 #include "Buffer.h"
+#include "Camera.h"
 
 int calcFlat = 0;
 
@@ -28,6 +29,37 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 }
 
+static void updateCamera(GLFWwindow *window, Camera &cam) 
+{
+    static double last_time;
+    static double last_x, last_y;
+    static bool hasInitialized = false;
+    if(!hasInitialized) {
+        last_time = glfwGetTime();
+        glfwGetCursorPos(window, &last_x, &last_y);
+        hasInitialized = true;
+    }
+
+    CameraMovement cm = CameraMovement::eStable;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eForward;
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eBackward;
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eLeft;
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eRight;
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    
+    cam.processKeyboard(cm, glfwGetTime()-last_time);
+    cam.processMouseMovement(x-last_x, last_y-y);
+
+    last_x = x;
+    last_y = y;
+    last_time = glfwGetTime();
+}
+
 int main(void)
 {
     glfwSetErrorCallback(error_callback);
@@ -43,7 +75,7 @@ int main(void)
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "Simple example", NULL, NULL);
     glfwSetKeyCallback(window, key_callback);
-
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwMakeContextCurrent(window);
 
     glewExperimental = GL_TRUE;
@@ -69,9 +101,9 @@ int main(void)
     inst.allocate(AccessLevel::eDeviceLocal, offset.size()*sizeof(glm::vec3), offset.data());
     mesh1.setInstanceArray(inst);
 
+    Camera cam({10.0f, 0.f, 0.f});
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
-    auto vp = prog["vp"] = proj*view;
     prog["text"] = 0;
     auto uniform_model = prog["model"];
 
@@ -86,8 +118,12 @@ int main(void)
         // draw
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         auto model = glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime())
-            , glm::vec3(0.0f, 1.0f, 0.0f));
+            , glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
         uniform_model = model;
+
+        auto vp = proj*cam.getViewMatrix();
+        prog["vp"] = vp;
+
         axis.draw(vp);
         l.draw(vp);
         prog.use();
@@ -97,6 +133,7 @@ int main(void)
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();
+        updateCamera(window, cam);
     }
     mesh1.release();
     prog.release();

@@ -26,7 +26,7 @@ void main()
 
 	mat4 newmodel = offset_mat*model;
 	vPos = vec3(newmodel*vec4(position, 1.0));
-	vNormal = vec3(newmodel * vec4(normal, 0.0));
+	vNormal = normalize(vec3(newmodel * vec4(normal, 0.0)));
 	vUV = texcoord;
 	
 	gl_Position=vp*newmodel*vec4(position, 1.0);
