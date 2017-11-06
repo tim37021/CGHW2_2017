@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 #include <string>
+#include "Buffer.h"
+
 class StaticMesh {
 public:
     void release();
@@ -15,11 +17,10 @@ public:
 private:
     StaticMesh();
     GLuint vao;
-    GLuint vbo[3];
-    GLuint ibo;
-    GLuint numIndices;
+    ArrayBuffer<GLfloat> m_pos, m_uv, m_normal;
+    ArrayBuffer<GLuint> m_indices;
 
-	bool m_uv, m_normal;
+	bool m_hasUV, m_hasNormal;
 };
 
 #endif
