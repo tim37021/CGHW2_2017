@@ -19,6 +19,11 @@ void Buffer::release()
 }
 
 
+bool Buffer::valid() const
+{
+    return glIsBuffer(m_id);
+}
+
 void *Buffer::map(AccessLevel level, uint32_t offset, uint32_t size) 
 {
     GLbitfield flags = 0;

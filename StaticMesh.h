@@ -19,8 +19,6 @@ private:
     GLuint vao;
     ArrayBuffer<GLfloat> m_pos, m_uv, m_normal;
     ArrayBuffer<GLuint> m_indices;
-
-	bool m_hasUV, m_hasNormal;
 };
 
 #endif

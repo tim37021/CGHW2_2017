@@ -1,3 +1,17 @@
+template <class T>
+ArrayBuffer<T>::ArrayBuffer()
+    : TypedBuffer(0)
+{
+
+}
+
+template <class T>
+template<class... Args>
+TypedBuffer<T>::TypedBuffer(Args&&... args)
+    : Buffer(args...)
+{
+
+}
 
 template <class T>
 T *TypedBuffer<T>::mapElements(AccessLevel level, uint32_t offset, uint32_t size)

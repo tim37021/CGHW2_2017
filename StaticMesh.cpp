@@ -2,7 +2,6 @@
 #include <tiny_obj_loader.h>
 
 StaticMesh::StaticMesh()
-    : m_hasUV(false), m_hasNormal(false)
 {
 
 }
@@ -40,7 +39,6 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
         ret.m_uv.bind();
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-		ret.m_hasUV = true;
     }
 
     if (shapes[0].mesh.normals.size() > 0) {
@@ -48,7 +46,6 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
         ret.m_normal.bind();
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		ret.m_hasNormal = true;
     }
 
     ret.m_indices = ArrayBuffer<GLuint>::CreateFromSTDVector(ArrayBufferType::eIndex, shapes[0].mesh.indices);
@@ -76,10 +73,10 @@ void StaticMesh::draw()
 
 bool StaticMesh::hasNormal() const
 {
-	return m_hasNormal;
+	return m_normal.valid();
 }
 
 bool StaticMesh::hasUV() const 
 {
-	return m_hasUV;
+	return m_uv.valid();
 }

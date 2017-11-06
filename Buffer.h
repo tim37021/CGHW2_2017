@@ -24,6 +24,8 @@ public:
     virtual uint32_t size() const
     { return m_size; }
 
+    bool valid() const;
+
     void allocate(AccessLevel level, uint32_t sizebyte, const void *data=nullptr);
 protected:
     void bind(GLenum target);
@@ -38,6 +40,8 @@ private:
 template <class T>
 class TypedBuffer: public Buffer {
 public:
+    template<class... Args>
+    TypedBuffer(Args&&... args);
     // note this is element based
     T *mapElements(AccessLevel level, uint32_t offset=0, uint32_t size=0);
 
@@ -51,7 +55,7 @@ enum class ArrayBufferType {
 template <class T>
 class ArrayBuffer: public TypedBuffer<T> {
 public:
-    ArrayBuffer()=default;
+    ArrayBuffer();
     ArrayBuffer(ArrayBufferType type);
     template <class S>
     static ArrayBuffer<S> CreateFromSTDVector(ArrayBufferType type, const std::vector<S> &, AccessLevel level=AccessLevel::eDeviceLocal);
