@@ -11,9 +11,11 @@ public:
 
     static StaticMesh LoadMesh(const std::string &filename);
     void draw();
+    void instancedDraw(uint32_t num_inst);
 
 	bool hasNormal() const;
-	bool hasUV() const;
+    bool hasUV() const;
+    void setInstanceArray(ArrayBuffer<GLfloat> inst_arr);
 private:
     StaticMesh();
     GLuint vao;

@@ -10,6 +10,7 @@
 #include "StaticMesh.h"
 #include "Texture.h"
 #include "Axis.h"
+#include "Buffer.h"
 
 int calcFlat = 0;
 
@@ -56,7 +57,17 @@ int main(void)
 
 	if (!mesh1.hasUV()) {
 		std::cerr<<"WARNING: The mesh has no UV data\n";
-	}
+    }
+    // upload mesh instance data
+    std::vector<glm::vec3> offset;
+    for(int i=0; i<10; i++) {
+        for(int j=0; j<10; j++) {
+            offset.push_back({-5+i, 0, -5+j});
+        }
+    }
+    auto inst = ArrayBuffer<GLfloat>(ArrayBufferType::eVertex);
+    inst.allocate(AccessLevel::eDeviceLocal, offset.size()*sizeof(glm::vec3), offset.data());
+    mesh1.setInstanceArray(inst);
 
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
@@ -82,7 +93,7 @@ int main(void)
         prog.use();
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
-        mesh1.draw();
+        mesh1.instancedDraw(offset.size());
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();

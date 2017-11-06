@@ -71,6 +71,12 @@ void StaticMesh::draw()
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 }
 
+void StaticMesh::instancedDraw(uint32_t num_inst)
+{
+    glBindVertexArray(vao);
+    glDrawElementsInstanced(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr, num_inst);
+}
+
 bool StaticMesh::hasNormal() const
 {
 	return m_normal.valid();
@@ -79,4 +85,19 @@ bool StaticMesh::hasNormal() const
 bool StaticMesh::hasUV() const 
 {
 	return m_uv.valid();
+}
+
+void StaticMesh::setInstanceArray(ArrayBuffer<GLfloat> inst_arr)
+{
+    glBindVertexArray(vao);
+    
+    if(inst_arr.valid()) {
+        inst_arr.bind();
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribDivisor(3, 1);
+    } else {
+        glDisableVertexAttribArray(3);
+    }
+    glBindVertexArray(0);
 }
