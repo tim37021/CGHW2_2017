@@ -70,7 +70,9 @@ bool UniformVariable::valid() const
 
 static std::string read_file(const std::string &filename) 
 {
-	std::ifstream t(filename);
+    std::ifstream t(filename);
+    if(!t.good())
+        throw std::runtime_error(filename + " not found!");
 	return std::string((std::istreambuf_iterator<char>(t)),
 		std::istreambuf_iterator<char>());
 }
