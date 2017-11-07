@@ -7,22 +7,27 @@ Axis::Axis(float s)
     
 }
 
-void Axis::draw(const glm::mat4 &vp)
+void Axis::draw()
 {
     line.set(glm::vec3(0), glm::vec3(1, 0, 0)*scale);
     line.color(glm::vec3(1, 0, 0));
-    line.draw(vp);
+    line.draw();
 
     line.set(glm::vec3(0), glm::vec3(0, 1, 0)*scale);
     line.color(glm::vec3(0, 1, 0));
-    line.draw(vp);
+    line.draw();
 
     line.set(glm::vec3(0), glm::vec3(0, 0, 1)*scale);
     line.color(glm::vec3(0, 0, 1));
-    line.draw(vp);
+    line.draw();
 }
 
 void Axis::release()
 {
     line.release();
+}
+
+Program &Axis::getProgram()
+{
+    return line.getProgram();
 }

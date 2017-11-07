@@ -7,7 +7,7 @@ void Program::bindUniformBuffer(const std::string &name, GLuint bind_point_index
     glBindBufferBase(GL_UNIFORM_BUFFER, bind_point_index, ubo.id());
     glUniformBlockBinding(m_program, block_index, bind_point_index);
 }
-
+/*
 template <class T>
 void Program::bindShaderStorage(const std::string &name, GLuint bind_point_index, ShaderStorage<T> &ubo)
 {
@@ -17,3 +17,4 @@ void Program::bindShaderStorage(const std::string &name, GLuint bind_point_index
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bind_point_index, ubo.id());
     glShaderStorageBlockBinding(m_program, block_index, bind_point_index);
 }
+*/

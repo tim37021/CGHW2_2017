@@ -94,25 +94,39 @@ int main(void)
     std::vector<glm::vec3> offset;
     for(int i=0; i<10; i++) {
         for(int j=0; j<10; j++) {
-            offset.push_back({-5+i, 0, -5+j});
+            for(int k=0; k<10; k++) {
+                offset.push_back(glm::vec3{-5+i, -5+k, -5+j}*2.f);
+            }
         }
     }
+    
     auto inst = ArrayBuffer<GLfloat>(ArrayBufferType::eVertex);
     inst.allocate(AccessLevel::eDeviceLocal, offset.size()*sizeof(glm::vec3), offset.data());
     mesh1.setInstanceArray(inst);
+
+    auto vp_buffer = UniformBuffer<glm::mat4>();
+    vp_buffer.allocate(AccessLevel::eWrite | AccessLevel::eCoherent | AccessLevel::ePersistent);
+    glm::mat4 &vp = *vp_buffer.mapStructure(AccessLevel::eWrite | AccessLevel::eCoherent | AccessLevel::ePersistent);
+    
 
     Camera cam({10.0f, 0.f, 0.f});
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
     prog["text"] = 0;
+    prog.bindUniformBuffer("UserData", 0, vp_buffer);
     auto uniform_model = prog["model"];
 
 
     Axis axis(7.0f);
-    glEnable(GL_DEPTH_TEST);
-
     Line l;
     l.set(glm::vec3(1, 5, 0), glm::vec3(5, 5, 5));
+
+    l.getProgram().bindUniformBuffer("UserData", 0, vp_buffer);
+    axis.getProgram().bindUniformBuffer("UserData", 0, vp_buffer);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
     while (!glfwWindowShouldClose(window))
     {
         // draw
@@ -121,11 +135,10 @@ int main(void)
             , glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
         uniform_model = model;
 
-        auto vp = proj*cam.getViewMatrix();
-        prog["vp"] = vp;
+        vp = proj*cam.getViewMatrix();
 
-        axis.draw(vp);
-        l.draw(vp);
+        axis.draw();
+        l.draw();
         prog.use();
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
@@ -136,6 +149,10 @@ int main(void)
         updateCamera(window, cam);
     }
     mesh1.release();
+
+    vp_buffer.unmap();
+    vp_buffer.release();
+    inst.release();
     prog.release();
     text.release();
     glfwDestroyWindow(window);

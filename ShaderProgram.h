@@ -6,6 +6,7 @@
 #include <map>
 #include <functional>
 #include <glm/glm.hpp>
+#include "Buffer.h"
 
 class UniformVariable
 {
@@ -36,6 +37,8 @@ public:
     static Program LoadFromFile(const std::string &vs, const std::string &fs);
     static Program LoadFromFile(const std::string &vs, const std::string &gs, const std::string &fs);
     UniformVariable &operator[](const std::string &);
+    template <class T>
+    void bindUniformBuffer(const std::string &name, GLuint bind_point_index, UniformBuffer<T> &ubo);
 
     bool valid() const;
     void use() const;
@@ -50,4 +53,5 @@ private:
     GLuint m_program;
 };
 
+#include "ShaderProgram.inl"
 #endif

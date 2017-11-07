@@ -8,8 +8,9 @@
 class Axis {
 public:
     Axis(float s=1.0f);
-    void draw(const glm::mat4 &vp);
+    void draw();
     void release();
+    Program &getProgram();
 private:
     Line line;
     float scale;

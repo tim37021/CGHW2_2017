@@ -59,3 +59,21 @@ uint32_t ArrayBuffer<T>::size() const
     // this will not work when user allocate on thier own
     return Buffer::size()/sizeof(T);
 }
+
+template <class T>
+T *UniformBuffer<T>::mapStructure(AccessLevel level)
+{
+    return reinterpret_cast<T *>(Buffer::map(level, 0, sizeof(T)));
+}
+
+template <class T>
+void UniformBuffer<T>::allocate(AccessLevel level, const T *data)
+{
+    Buffer::allocate(level, sizeof(T), data);
+}
+
+template <class T>
+void UniformBuffer<T>::bind()
+{
+    Buffer::bind(GL_UNIFORM_BUFFER);
+}

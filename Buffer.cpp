@@ -64,3 +64,8 @@ void Buffer::bind(GLenum target)
 {
     glBindBuffer(target, m_id);
 }
+
+GLuint Buffer::id() const
+{
+    return m_id;
+}

@@ -1,9 +1,12 @@
-#version 330
-uniform mat4 vp;
+#version 450
+
+layout(std140, binding=0) uniform UserData {
+	mat4 vp;
+} udata;
 
 uniform vec3 data[2];
 
 void main()
 {	
-	gl_Position=vp * vec4(data[gl_VertexID], 1.0);
+	gl_Position=udata.vp * vec4(data[gl_VertexID], 1.0);
 }

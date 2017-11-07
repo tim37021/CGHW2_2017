@@ -1,4 +1,4 @@
-#version 330
+#version 450
 #pragma shader_stage(fragment)
 
 // Default color buffer location is 0
@@ -7,9 +7,9 @@ layout(location=0) out vec4 color;
 
 uniform sampler2D text;
 
-in vec3 gPos;
-in vec3 gNormal;
-in vec2 gUV;
+layout(location=0) in vec3 gPos;
+layout(location=1) in vec3 gNormal;
+layout(location=2) in vec2 gUV;
 
 uniform vec3 lightPos = vec3(0, 5, 0);
 

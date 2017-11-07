@@ -13,6 +13,10 @@ static inline AccessLevel operator &(const AccessLevel &lhs, const AccessLevel &
     return static_cast<AccessLevel>(static_cast<int>(lhs) & static_cast<int>(rhs)); 
 }
 
+static inline AccessLevel operator |(const AccessLevel &lhs, const AccessLevel &rhs) {
+    return static_cast<AccessLevel>(static_cast<int>(lhs) | static_cast<int>(rhs)); 
+}
+
 class Buffer {
 public:
     Buffer();
@@ -27,6 +31,7 @@ public:
     bool valid() const;
 
     void allocate(AccessLevel level, uint32_t sizebyte, const void *data=nullptr);
+    GLuint id() const;
 protected:
     void bind(GLenum target);
     Buffer(GLuint id);
@@ -64,6 +69,17 @@ public:
     virtual uint32_t size() const override;
 private:
     GLenum m_type;
+};
+
+template <class T>
+class UniformBuffer: public Buffer {
+public:
+    UniformBuffer()=default;
+    T *mapStructure(AccessLevel level);
+    void allocate(AccessLevel level=AccessLevel::eWrite, const T *data=nullptr);
+    virtual void bind() override;
+
+    UniformBuffer &operator=(const UniformBuffer &ths)=delete;
 };
 
 #include "Buffer.inl"

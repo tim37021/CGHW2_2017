@@ -5,7 +5,6 @@ Line::Line()
     : prog(Program::LoadFromFile("../resource/vs_line.txt", "../resource/fs_line.txt"))
 {
     glGenVertexArrays(1, &vao);
-    uvp = prog["vp"];
     ua = prog["data[0]"];
     ub = prog["data[1]"];
     ucolor = prog["lColor"];
@@ -17,11 +16,8 @@ void Line::set(const glm::vec3 &a, const glm::vec3 &b)
     ub = b;
 }
 
-void Line::draw(const glm::mat4 &vp)
+void Line::draw()
 {
-    uvp = vp;
-
-
     glBindVertexArray(vao);
     prog.use();
     glDrawArrays(GL_LINES, 0, 2);
@@ -36,4 +32,9 @@ void Line::release()
 void Line::color(const glm::vec3 &color)
 {
     ucolor = color;
+}
+
+Program &Line::getProgram()
+{
+    return prog;
 }

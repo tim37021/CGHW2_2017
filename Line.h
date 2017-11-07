@@ -9,7 +9,8 @@ public:
     Line();
     void set(const glm::vec3 &a, const glm::vec3 &b);
     void color(const glm::vec3 &color);
-    void draw(const glm::mat4 &vp);
+    void draw();
+    Program &getProgram();
     void release();
 private:
     GLuint vao;
