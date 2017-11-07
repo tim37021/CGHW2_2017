@@ -52,8 +52,8 @@ static void updateCamera(GLFWwindow *window, Camera &cam)
     double x, y;
     glfwGetCursorPos(window, &x, &y);
     
-    cam.processKeyboard(cm, glfwGetTime()-last_time);
-    cam.processMouseMovement(x-last_x, last_y-y);
+    cam.processKeyboard(cm, static_cast<float>(glfwGetTime()-last_time));
+    cam.processMouseMovement(static_cast<float>(x-last_x), static_cast<float>(last_y-y));
 
     last_x = x;
     last_y = y;
@@ -101,7 +101,7 @@ int main(void)
     }
     
     auto inst = ArrayBuffer<GLfloat>(ArrayBufferType::eVertex);
-    inst.allocate(AccessLevel::eDeviceLocal, offset.size()*sizeof(glm::vec3), offset.data());
+    inst.allocate(AccessLevel::eDeviceLocal, static_cast<int32_t>(offset.size())*sizeof(glm::vec3), offset.data());
     mesh1.setInstanceArray(inst);
 
     auto vp_buffer = UniformBuffer<glm::mat4>();
@@ -142,7 +142,7 @@ int main(void)
         prog.use();
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
-        mesh1.instancedDraw(offset.size());
+        mesh1.instancedDraw(static_cast<int32_t>(offset.size()));
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();
