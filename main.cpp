@@ -91,12 +91,12 @@ int main(void)
 		std::cerr<<"WARNING: The mesh has no UV data\n";
     }
 
-    auto inst = ArrayBuffer<glm::vec4>(ArrayBufferType::eVertex);
+    auto inst = ArrayBuffer<glm::vec3>(ArrayBufferType::eVertex);
     inst.allocateElements(AccessLevel::eDeviceLocal, 1000);
     mesh1.setInstanceArray(inst);
 
     // create shared buffer
-    auto inst_ssbo = ShaderStorage<glm::vec4>(inst);
+    auto inst_ssbo = ShaderStorage<glm::vec3>(inst);
     auto prog_cs = Program::LoadFromFile("../resource/cs.txt");
     //inst_ssbo.bind();
     prog_cs.bindShaderStorage("UserData", 0, inst_ssbo);

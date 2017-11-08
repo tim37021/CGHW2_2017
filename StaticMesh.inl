@@ -7,7 +7,9 @@ void StaticMesh::setInstanceArray(ArrayBuffer<T> inst_arr)
     if(inst_arr.valid()) {
         inst_arr.bind();
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, sizeof(T)/sizeof(GLfloat), GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribFormat(3, 3, GL_FLOAT, GL_FALSE, 0);
+        glVertexAttribBinding(3, 3);
+        glBindVertexBuffer(3, inst_arr.id(), 0, sizeof(float)*3);
         glVertexAttribDivisor(3, 1);
     } else {
         glDisableVertexAttribArray(3);

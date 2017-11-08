@@ -77,7 +77,7 @@ void StaticMesh::draw()
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 }
-#include <iostream>
+
 void StaticMesh::instancedDraw(uint32_t num_inst)
 {
     glBindVertexArray(vao);
