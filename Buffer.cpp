@@ -58,8 +58,10 @@ void Buffer::allocate(AccessLevel level, uint32_t size, const void *data)
     flags |= static_cast<int>(level&AccessLevel::ePersistent) ? GL_MAP_PERSISTENT_BIT: 0;
     flags |= static_cast<int>(level&AccessLevel::eCoherent) ? GL_MAP_COHERENT_BIT: 0;
 
-    bind();
+    //bind();
     glNamedBufferStorage(m_id, size, data, flags);
+    GLenum err = glGetError();
+    err = 1;
 }
 
 void Buffer::bind(GLenum target) const

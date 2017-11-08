@@ -32,23 +32,30 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
     ret.m_pos = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.positions);
     ret.m_pos.bind();
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
+    glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+    glVertexAttribBinding(0, 0);
+    glBindVertexBuffer(0, ret.m_pos.id(), 0, sizeof(float)*3);
+
     if (shapes[0].mesh.texcoords.size() > 0) {
         ret.m_uv = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.texcoords);
-        ret.m_uv.bind();
+
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
+        glVertexAttribBinding(1, 1);
+        glBindVertexBuffer(1, ret.m_uv.id(), 0, sizeof(float)*2);
     }
 
     if (shapes[0].mesh.normals.size() > 0) {
         ret.m_normal = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.normals);
-        ret.m_normal.bind();
+
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribFormat(2, 3, GL_FLOAT, GL_FALSE, 0);
+        glVertexAttribBinding(2, 2);
+        glBindVertexBuffer(2, ret.m_normal.id(), 0, sizeof(float)*3);
     }
 
     ret.m_indices = ArrayBuffer<GLuint>::CreateFromSTDVector(ArrayBufferType::eIndex, shapes[0].mesh.indices);
+    ret.m_indices.bind();
 
     glBindVertexArray(0);
     return ret;
@@ -70,7 +77,7 @@ void StaticMesh::draw()
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 }
-
+#include <iostream>
 void StaticMesh::instancedDraw(uint32_t num_inst)
 {
     glBindVertexArray(vao);
