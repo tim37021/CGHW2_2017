@@ -204,7 +204,7 @@ void Program::dispatchCompute(uint32_t x, uint32_t y, uint32_t z) const
     glDispatchCompute(x, y, z);
 }
 
-UniformVariable &Program::operator[](const std::string &name)
+UniformVariable &Program::operator[](const std::string &name) const
 {
     // TODO
     use();

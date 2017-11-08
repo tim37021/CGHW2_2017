@@ -24,7 +24,7 @@ public:
     virtual void unmap();
 
     virtual void release();
-    virtual void bind()=0;
+    virtual void bind() const =0;
     virtual uint32_t size() const
     { return m_size; }
 
@@ -33,7 +33,7 @@ public:
     void allocate(AccessLevel level, uint32_t sizebyte, const void *data=nullptr);
     GLuint id() const;
 protected:
-    void bind(GLenum target);
+    void bind(GLenum target) const;
     Buffer(GLuint id);
 private:
     GLuint m_id;
@@ -50,7 +50,7 @@ public:
     // note this is element based
     T *mapElements(AccessLevel level, uint32_t offset=0, uint32_t size=0);
 
-    void allocateElements(AccessLevel level, uint32_t numElement, const T *data);
+    void allocateElements(AccessLevel level, uint32_t numElement, const T *data=nullptr);
 };
 
 enum class ArrayBufferType {
@@ -64,22 +64,44 @@ public:
     ArrayBuffer(ArrayBufferType type);
     template <class S>
     static ArrayBuffer<S> CreateFromSTDVector(ArrayBufferType type, const std::vector<S> &, AccessLevel level=AccessLevel::eDeviceLocal);
-    virtual void bind() override;
+    virtual void bind() const override;
 
     virtual uint32_t size() const override;
 private:
     GLenum m_type;
 };
 
+// TODO inherit from TypedBuffer
 template <class T>
 class UniformBuffer: public Buffer {
 public:
     UniformBuffer()=default;
+    // shared buffer
+    UniformBuffer(const Buffer &);
+    // this can only map one structure
     T *mapStructure(AccessLevel level);
     void allocate(AccessLevel level=AccessLevel::eWrite, const T *data=nullptr);
-    virtual void bind() override;
+    virtual void bind() const override;
 
-    UniformBuffer &operator=(const UniformBuffer &ths)=delete;
+    // this might not be 1 if shared
+    virtual uint32_t size() const override;
+    
+    UniformBuffer &operator=(const UniformBuffer &rhs)=delete;
+};
+
+template <class T>
+class ShaderStorage: public Buffer {
+public:
+    ShaderStorage()=default;
+    ShaderStorage(const Buffer &);
+    T *mapStructure(AccessLevel level);
+    void allocate(AccessLevel level, const T *data=nullptr);
+    virtual void bind() const override;
+
+    // this might not be 1 if shared
+    virtual uint32_t size() const override;
+    
+    ShaderStorage &operator=(const ShaderStorage &rhs)=delete;
 };
 
 #include "Buffer.inl"

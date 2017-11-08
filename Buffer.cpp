@@ -4,7 +4,7 @@
 Buffer::Buffer()
     : m_ptr(nullptr), m_id(0)
 {
-    glGenBuffers(1, &m_id);
+    glCreateBuffers(1, &m_id);
 }
 
 Buffer::Buffer(GLuint id)
@@ -41,7 +41,9 @@ void *Buffer::map(AccessLevel level, uint32_t offset, uint32_t size)
 
 void Buffer::unmap()
 {
-    glUnmapNamedBuffer(m_id);
+    if(m_ptr)
+        glUnmapNamedBuffer(m_id);
+    m_ptr = nullptr;
 }
 
 void Buffer::allocate(AccessLevel level, uint32_t size, const void *data)
@@ -60,7 +62,7 @@ void Buffer::allocate(AccessLevel level, uint32_t size, const void *data)
     glNamedBufferStorage(m_id, size, data, flags);
 }
 
-void Buffer::bind(GLenum target) 
+void Buffer::bind(GLenum target) const
 {
     glBindBuffer(target, m_id);
 }

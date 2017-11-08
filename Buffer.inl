@@ -48,7 +48,7 @@ ArrayBuffer<S> ArrayBuffer<T>::CreateFromSTDVector(ArrayBufferType type, const s
 }
 
 template <class T>
-void ArrayBuffer<T>::bind()
+void ArrayBuffer<T>::bind() const
 {
     Buffer::bind(m_type);
 }
@@ -58,6 +58,13 @@ uint32_t ArrayBuffer<T>::size() const
 {
     // this will not work when user allocate on thier own
     return Buffer::size()/sizeof(T);
+}
+
+template <class T>
+UniformBuffer<T>::UniformBuffer(const Buffer &b2shared)
+    : Buffer(b2shared.id())
+{
+
 }
 
 template <class T>
@@ -73,7 +80,45 @@ void UniformBuffer<T>::allocate(AccessLevel level, const T *data)
 }
 
 template <class T>
-void UniformBuffer<T>::bind()
+uint32_t UniformBuffer<T>::size() const
+{
+    return Buffer::size()/sizeof(T);
+}
+
+template <class T>
+void UniformBuffer<T>::bind() const
 {
     Buffer::bind(GL_UNIFORM_BUFFER);
+}
+
+template <class T>
+ShaderStorage<T>::ShaderStorage(const Buffer &b2shared)
+    : Buffer(b2shared.id())
+{
+
+}
+
+
+template <class T>
+T *ShaderStorage<T>::mapStructure(AccessLevel level)
+{
+    return reinterpret_cast<T *>(Buffer::map(level, 0, sizeof(T)));
+}
+
+template <class T>
+void ShaderStorage<T>::allocate(AccessLevel level, const T *data)
+{
+    Buffer::allocate(level, sizeof(T), data);
+}
+
+template <class T>
+void ShaderStorage<T>::bind() const
+{
+    Buffer::bind(GL_SHADER_STORAGE_BUFFER);
+}
+
+template <class T>
+uint32_t ShaderStorage<T>::size() const
+{
+    return Buffer::size()/sizeof(T);
 }

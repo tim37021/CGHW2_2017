@@ -15,12 +15,15 @@ public:
 
 	bool hasNormal() const;
     bool hasUV() const;
-    void setInstanceArray(ArrayBuffer<GLfloat> inst_arr);
+    template <class T>
+    void setInstanceArray(ArrayBuffer<T> inst_arr);
 private:
     StaticMesh();
     GLuint vao;
     ArrayBuffer<GLfloat> m_pos, m_uv, m_normal;
     ArrayBuffer<GLuint> m_indices;
 };
+
+#include "StaticMesh.inl"
 
 #endif

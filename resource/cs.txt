@@ -1,0 +1,19 @@
+#version 450
+#pragma shader_stage(compute)
+
+layout(std140, binding=0) buffer UserData {
+    vec4 pos[1000];
+} data;
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+uniform ivec3 dimension = ivec3(10, 10, 10);
+uniform float time=0.0;
+
+void main() {
+    ivec3 id = ivec3(gl_GlobalInvocationID);
+    int idx = id.x + dimension.x*id.y + dimension.x*dimension.y*id.z;
+    float factor = 2*3.1415;
+    vec3 pos = vec3(-5+id.x+sin(factor*time+idx), -5+id.y, -5+id.z)*2;
+    data.pos[idx] = vec4(pos, 1.0);
+}

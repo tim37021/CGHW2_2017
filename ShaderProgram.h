@@ -36,9 +36,11 @@ public:
     static Program LoadFromFile(const std::string &filename);
     static Program LoadFromFile(const std::string &vs, const std::string &fs);
     static Program LoadFromFile(const std::string &vs, const std::string &gs, const std::string &fs);
-    UniformVariable &operator[](const std::string &);
+    UniformVariable &operator[](const std::string &) const;
     template <class T>
     void bindUniformBuffer(const std::string &name, GLuint bind_point_index, UniformBuffer<T> &ubo);
+    template <class T>
+    void bindShaderStorage(const std::string &name, GLuint bind_point_index, ShaderStorage<T> &ssbo);
 
     bool valid() const;
     void use() const;
@@ -49,7 +51,7 @@ public:
 private:
     static GLuint CreateShader(GLenum type, const std::string &src);
     Program(GLuint prog);
-    std::map<std::string, UniformVariable> m_uniformVariables;
+    mutable std::map<std::string, UniformVariable> m_uniformVariables;
     GLuint m_program;
 };
 

@@ -90,25 +90,29 @@ int main(void)
 	if (!mesh1.hasUV()) {
 		std::cerr<<"WARNING: The mesh has no UV data\n";
     }
-    // upload mesh instance data
-    std::vector<glm::vec3> offset;
-    for(int i=0; i<10; i++) {
-        for(int j=0; j<10; j++) {
-            for(int k=0; k<10; k++) {
-                offset.push_back(glm::vec3{-5+i, -5+k, -5+j}*2.f);
-            }
-        }
-    }
-    
-    auto inst = ArrayBuffer<GLfloat>(ArrayBufferType::eVertex);
-    inst.allocate(AccessLevel::eDeviceLocal, static_cast<int32_t>(offset.size())*sizeof(glm::vec3), offset.data());
+
+    auto inst = ArrayBuffer<glm::vec4>(ArrayBufferType::eVertex);
+    inst.allocateElements(AccessLevel::eDeviceLocal, 1000);
     mesh1.setInstanceArray(inst);
+
+    // create shared buffer
+    auto inst_ssbo = ShaderStorage<glm::vec4>(inst);
+    auto prog_cs = Program::LoadFromFile("../resource/cs.txt");
+    //inst_ssbo.bind();
+    prog_cs.bindShaderStorage("UserData", 0, inst_ssbo);
+
+    auto updateBuffer = [prog_cs, inst_ssbo] (float t) {
+        prog_cs["time"] = t;
+        prog_cs.dispatchCompute(10, 10, 10);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+    };
+    updateBuffer(0.f);
+    inst.bind();
 
     auto vp_buffer = UniformBuffer<glm::mat4>();
     vp_buffer.allocate(AccessLevel::eWrite | AccessLevel::eCoherent | AccessLevel::ePersistent);
     glm::mat4 &vp = *vp_buffer.mapStructure(AccessLevel::eWrite | AccessLevel::eCoherent | AccessLevel::ePersistent);
     
-
     Camera cam({10.0f, 0.f, 0.f});
     auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
@@ -139,10 +143,12 @@ int main(void)
 
         axis.draw();
         l.draw();
+        updateBuffer(glfwGetTime());
+        //
         prog.use();
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
-        mesh1.instancedDraw(static_cast<int32_t>(offset.size()));
+        mesh1.instancedDraw(1000);
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();
