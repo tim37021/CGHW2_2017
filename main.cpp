@@ -160,7 +160,10 @@ int main(void)
     vp_buffer.release();
     inst.release();
     prog.release();
+    prog_cs.release();
     text.release();
+    axis.release();
+    l.release();
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
