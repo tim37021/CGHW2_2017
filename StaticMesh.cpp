@@ -26,32 +26,39 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
 	}
 
     StaticMesh ret;
-    glGenVertexArrays(1, &ret.vao);
-    glBindVertexArray(ret.vao);
+
+    DrawState &ds = ret.m_drawState;
+    ds.bind();
 
     ret.m_pos = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.positions);
-    ret.m_pos.bind();
-    glEnableVertexAttribArray(0);
-    glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
-    glVertexAttribBinding(0, 0);
-    glBindVertexBuffer(0, ret.m_pos.id(), 0, sizeof(float)*3);
+    
+    ArrayAttrib attrib;
+    attrib.format(3, AttribArrayType::eFloat, 0);
+    AttribBufferBinding vert_bb(0, ret.m_pos);
+    attrib.bind(vert_bb, sizeof(GLfloat)*3, 0);
+    ds.enableArrayAttrib(0);
+    ds.setArrayAttrib(0, attrib);
 
     if (shapes[0].mesh.texcoords.size() > 0) {
         ret.m_uv = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.texcoords);
 
-        glEnableVertexAttribArray(1);
-        glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
-        glVertexAttribBinding(1, 1);
-        glBindVertexBuffer(1, ret.m_uv.id(), 0, sizeof(float)*2);
+        ArrayAttrib attrib_uv;
+        attrib_uv.format(2, AttribArrayType::eFloat, 0);
+        AttribBufferBinding uv_bb(0, ret.m_uv);
+        attrib_uv.bind(uv_bb, sizeof(GLfloat)*2, 0);
+        ds.enableArrayAttrib(1);
+        ds.setArrayAttrib(1, attrib_uv);
     }
 
     if (shapes[0].mesh.normals.size() > 0) {
         ret.m_normal = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.normals);
 
-        glEnableVertexAttribArray(2);
-        glVertexAttribFormat(2, 3, GL_FLOAT, GL_FALSE, 0);
-        glVertexAttribBinding(2, 2);
-        glBindVertexBuffer(2, ret.m_normal.id(), 0, sizeof(float)*3);
+        ArrayAttrib attrib_norm;
+        attrib_norm.format(3, AttribArrayType::eFloat, 0);
+        AttribBufferBinding norm_bb(0, ret.m_normal);
+        attrib_norm.bind(norm_bb, sizeof(GLfloat)*3, 0);
+        ds.enableArrayAttrib(2);
+        ds.setArrayAttrib(2, attrib_norm);
     }
 
     ret.m_indices = ArrayBuffer<GLuint>::CreateFromSTDVector(ArrayBufferType::eIndex, shapes[0].mesh.indices);
@@ -63,7 +70,7 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
 
 void StaticMesh::release()
 {
-    glDeleteVertexArrays(1, &vao);
+    m_drawState.release();
     m_pos.release();
     // free to release empty buffer
     m_uv.release();
@@ -74,13 +81,13 @@ void StaticMesh::release()
 
 void StaticMesh::draw()
 {
-    glBindVertexArray(vao);
+    m_drawState.bind();
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 }
 
 void StaticMesh::instancedDraw(uint32_t num_inst)
 {
-    glBindVertexArray(vao);
+    m_drawState.bind();
     glDrawElementsInstanced(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr, num_inst);
 }
 

@@ -2,7 +2,7 @@
 #pragma shader_stage(compute)
 
 struct Position {
-  float x, y, z;
+  float x, y, z, w;
 };
 
 layout(std430, binding=0) buffer UserData {
@@ -18,7 +18,7 @@ void main() {
     ivec3 id = ivec3(gl_GlobalInvocationID);
     int idx = id.x + dimension.x*id.y + dimension.x*dimension.y*id.z;
     float factor = 2*3.1415;
-    vec3 pos = vec3(-5+id.x+sin(factor*time), -5+id.y, -5+id.z)*2;
+    vec3 pos = vec3(-5+id.x, -5+id.y, -5+id.z)*2;
     data.pos[idx].x = pos.x;
     data.pos[idx].y = pos.y;
     data.pos[idx].z = pos.z;

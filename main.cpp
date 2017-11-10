@@ -14,6 +14,7 @@
 #include "Camera.h"
 
 int calcFlat = 0;
+bool enableCamera = true;
 
 static void error_callback(int error, const char* description)
 {
@@ -26,7 +27,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     if (key == GLFW_KEY_F && action == GLFW_PRESS)
         calcFlat = !calcFlat;
-
+    if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+        enableCamera = !enableCamera;
+        glfwSetInputMode(window, GLFW_CURSOR, enableCamera? GLFW_CURSOR_DISABLED: GLFW_CURSOR_NORMAL);
+    }
 }
 
 static void updateCamera(GLFWwindow *window, Camera &cam) 
@@ -59,6 +63,12 @@ static void updateCamera(GLFWwindow *window, Camera &cam)
     last_y = y;
     last_time = glfwGetTime();
 }
+#include <algorithm>
+
+struct VertexData {
+    glm::vec3 offset;
+    int show;
+};
 
 int main(void)
 {
@@ -91,12 +101,12 @@ int main(void)
 		std::cerr<<"WARNING: The mesh has no UV data\n";
     }
 
-    auto inst = ArrayBuffer<glm::vec3>(ArrayBufferType::eVertex);
+    auto inst = ArrayBuffer<VertexData>(ArrayBufferType::eVertex);
     inst.allocateElements(AccessLevel::eDeviceLocal, 1000);
-    mesh1.setInstanceArray(inst);
+    mesh1.setInstanceArray(inst, 3, 0);
 
     // create shared buffer
-    auto inst_ssbo = ShaderStorage<glm::vec3>(inst);
+    auto inst_ssbo = ShaderStorage<VertexData>(inst);
     auto prog_cs = Program::LoadFromFile("../resource/cs.txt");
     //inst_ssbo.bind();
     prog_cs.bindShaderStorage("UserData", 0, inst_ssbo);
@@ -106,6 +116,8 @@ int main(void)
         prog_cs.dispatchCompute(10, 10, 10);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     };
+    
+
     updateBuffer(0.f);
     inst.bind();
 
@@ -135,7 +147,7 @@ int main(void)
     {
         // draw
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        auto model = glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime())
+        auto model = glm::rotate(glm::mat4(1.0f), static_cast<float>(1.0f)
             , glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
         uniform_model = model;
 
@@ -152,7 +164,8 @@ int main(void)
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();
-        updateCamera(window, cam);
+        if(enableCamera)
+            updateCamera(window, cam);
     }
     mesh1.release();
 

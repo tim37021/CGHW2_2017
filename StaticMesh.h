@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <string>
 #include "Buffer.h"
+#include "DrawState.h"
 
 class StaticMesh {
 public:
@@ -16,10 +17,10 @@ public:
 	bool hasNormal() const;
     bool hasUV() const;
     template <class T>
-    void setInstanceArray(ArrayBuffer<T> inst_arr);
+    void setInstanceArray(ArrayBuffer<T> inst_arr, uint32_t size, uint32_t offset);
 private:
     StaticMesh();
-    GLuint vao;
+    DrawState m_drawState;
     ArrayBuffer<GLfloat> m_pos, m_uv, m_normal;
     ArrayBuffer<GLuint> m_indices;
 };

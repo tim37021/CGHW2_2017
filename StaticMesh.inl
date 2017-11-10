@@ -1,18 +1,18 @@
 
 template <class T>
-void StaticMesh::setInstanceArray(ArrayBuffer<T> inst_arr)
+void StaticMesh::setInstanceArray(ArrayBuffer<T> inst_arr, uint32_t size, uint32_t offset)
 {
-    glBindVertexArray(vao);
     
     if(inst_arr.valid()) {
-        inst_arr.bind();
-        glEnableVertexAttribArray(3);
-        glVertexAttribFormat(3, 3, GL_FLOAT, GL_FALSE, 0);
-        glVertexAttribBinding(3, 3);
-        glBindVertexBuffer(3, inst_arr.id(), 0, sizeof(float)*3);
-        glVertexAttribDivisor(3, 1);
+        ArrayAttrib attrib_inst;
+        attrib_inst.format(size, AttribArrayType::eFloat, 0);
+        AttribBufferBinding inst_bb(3, inst_arr);
+        inst_bb.divisor(1);
+        attrib_inst.bind(inst_bb, sizeof(T), offset);
+        m_drawState.enableArrayAttrib(3);
+        m_drawState.setArrayAttrib(3, attrib_inst);
+
     } else {
-        glDisableVertexAttribArray(3);
+        m_drawState.disableArrayAttrib(3);
     }
-    glBindVertexArray(0);
 }
