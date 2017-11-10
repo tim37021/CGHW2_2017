@@ -34,31 +34,26 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
     
     ArrayAttrib attrib;
     attrib.format(3, AttribArrayType::eFloat, 0);
-    AttribBufferBinding vert_bb(0, ret.m_pos);
-    attrib.bind(vert_bb, sizeof(GLfloat)*3, 0);
+    ds.bindBuffer(0, ret.m_pos, 0, sizeof(GLfloat)*3);
     ds.enableArrayAttrib(0);
-    ds.setArrayAttrib(0, attrib);
+    ds.setArrayAttrib(0, attrib, 0);
 
     if (shapes[0].mesh.texcoords.size() > 0) {
         ret.m_uv = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.texcoords);
 
-        ArrayAttrib attrib_uv;
-        attrib_uv.format(2, AttribArrayType::eFloat, 0);
-        AttribBufferBinding uv_bb(0, ret.m_uv);
-        attrib_uv.bind(uv_bb, sizeof(GLfloat)*2, 0);
+        attrib.format(2, AttribArrayType::eFloat, 0);
+        ds.bindBuffer(1, ret.m_uv, 0, sizeof(GLfloat)*2);
         ds.enableArrayAttrib(1);
-        ds.setArrayAttrib(1, attrib_uv);
+        ds.setArrayAttrib(1, attrib, 1);
     }
 
     if (shapes[0].mesh.normals.size() > 0) {
         ret.m_normal = ArrayBuffer<GLfloat>::CreateFromSTDVector(ArrayBufferType::eVertex, shapes[0].mesh.normals);
 
-        ArrayAttrib attrib_norm;
-        attrib_norm.format(3, AttribArrayType::eFloat, 0);
-        AttribBufferBinding norm_bb(0, ret.m_normal);
-        attrib_norm.bind(norm_bb, sizeof(GLfloat)*3, 0);
+        attrib.format(3, AttribArrayType::eFloat, 0);
+        ds.bindBuffer(2, ret.m_normal, 0, sizeof(GLfloat)*3);
         ds.enableArrayAttrib(2);
-        ds.setArrayAttrib(2, attrib_norm);
+        ds.setArrayAttrib(2, attrib, 2);
     }
 
     ret.m_indices = ArrayBuffer<GLuint>::CreateFromSTDVector(ArrayBufferType::eIndex, shapes[0].mesh.indices);

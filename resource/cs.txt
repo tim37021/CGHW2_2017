@@ -2,7 +2,8 @@
 #pragma shader_stage(compute)
 
 struct Position {
-  float x, y, z, w;
+  float x, y, z;
+  int show;
 };
 
 layout(std430, binding=0) buffer UserData {
@@ -11,15 +12,18 @@ layout(std430, binding=0) buffer UserData {
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-uniform ivec3 dimension = ivec3(10, 10, 10);
+uniform ivec3 workers = ivec3(10, 10, 10);
 uniform float time=0.0;
+uniform vec3 camPos;
 
 void main() {
     ivec3 id = ivec3(gl_GlobalInvocationID);
-    int idx = id.x + dimension.x*id.y + dimension.x*dimension.y*id.z;
+    int idx = id.x + workers.x*id.y + workers.x*workers.y*id.z;
     float factor = 2*3.1415;
-    vec3 pos = vec3(-5+id.x, -5+id.y, -5+id.z)*2;
+    vec3 pos = vec3(-workers.x/2+id.x, -workers.y/2+id.y, -workers.z/2+id.z);
     data.pos[idx].x = pos.x;
     data.pos[idx].y = pos.y;
     data.pos[idx].z = pos.z;
+    if(length(camPos - pos)<1.4)
+        data.pos[idx].show = 1;
 }

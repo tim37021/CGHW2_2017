@@ -1,0 +1,16 @@
+#version 450
+#pragma shader_stage(vertex)
+layout(location=0) in vec3 position;
+layout(location=1) in int show;
+
+layout(std140, binding=0) uniform UserData {
+	mat4 vp;
+} data;
+
+layout(location=0) out int vShow;
+
+void main()
+{
+	vShow = show;
+	gl_Position=data.vp*vec4(position, 1.0);
+}

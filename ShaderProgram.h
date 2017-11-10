@@ -20,6 +20,7 @@ public:
     glm::uvec2 operator=(const glm::uvec2 &);
     glm::vec2 operator=(const glm::vec2 &);
     glm::vec3 operator=(const glm::vec3 &);
+    glm::ivec3 operator=(const glm::ivec3 &);
     glm::mat4 operator=(const glm::mat4 &);
     UniformVariable &operator=(const UniformVariable &rhs)=default;
     bool valid() const;

@@ -3,7 +3,8 @@
 layout(location=0) in vec3 position;
 layout(location=1) in vec2 texcoord;
 layout(location=2) in vec3 normal;
-layout(location=3) in vec4 offset;
+layout(location=3) in vec3 offset;
+layout(location=4) in int show;
 
 // uniform variable can be viewed as a constant
 // you can set the uniform variable by glUniformXXXXXXXX
@@ -32,5 +33,8 @@ void main()
 	vNormal = normalize(vec3(newmodel * vec4(normal, 0.0)));
 	vUV = texcoord;
 	
-	gl_Position=data.vp*newmodel*vec4(position, 1.0);
+	if(show!=0)
+		gl_Position=data.vp*newmodel*vec4(position, 1.0);
+	else
+		gl_Position=vec4(0.0);
 }

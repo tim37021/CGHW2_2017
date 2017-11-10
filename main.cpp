@@ -92,7 +92,8 @@ int main(void)
     glewInit();
 
     auto mesh1 = StaticMesh::LoadMesh("../resource/sphere.obj");
-    auto prog = Program::LoadFromFile("../resource/vs.txt", "../resource/gs.txt", "../resource/fs.txt");
+    //auto prog = Program::LoadFromFile("../resource/vs.txt", "../resource/gs.txt", "../resource/fs.txt");
+    auto prog = Program::LoadFromFile("../resource/vs_dot.txt", "../resource/fs_dot.txt");
 	auto text = Texture2D::LoadFromFile("../resource/brick.png");
 	// Remove this line and see the difference
 	text.setFilter(FilterMode::eNearestMipmapLinear, FilterMode::eLinear);
@@ -102,8 +103,42 @@ int main(void)
     }
 
     auto inst = ArrayBuffer<VertexData>(ArrayBufferType::eVertex);
-    inst.allocateElements(AccessLevel::eDeviceLocal, 1000);
-    mesh1.setInstanceArray(inst, 3, 0);
+    std::vector<uint8_t> dummy(25*25*25*sizeof(VertexData), 0);
+    inst.allocateElements(AccessLevel::eDeviceLocal, 25*25*25, (const VertexData *)dummy.data());
+/*
+    auto &ds = mesh1.drawState();
+{
+    ArrayAttrib attrib;
+    attrib.format(3, AttribArrayType::eFloat, 0);
+    ds.bindBuffer(3, inst, 0, sizeof(VertexData));
+    ds.enableArrayAttrib(3);
+    attrib.divisor(1);
+    ds.setArrayAttrib(3, attrib, 3);
+}
+{
+    ArrayAttrib attrib;
+    attrib.format(1, AttribArrayType::eInt, 0);
+    ds.bindBuffer(4, inst, offsetof(VertexData, show), sizeof(VertexData));
+    ds.enableArrayAttrib(4);
+    attrib.divisor(1);
+    ds.setArrayAttrib(4, attrib, 4);
+}*/
+    DrawState dots;
+{
+    ArrayAttrib attrib;
+    attrib.format(3, AttribArrayType::eFloat, 0);
+    dots.bindBuffer(0, inst, 0, sizeof(VertexData));
+    dots.enableArrayAttrib(0);
+    dots.setArrayAttrib(0, attrib, 0);
+}
+{
+    ArrayAttrib attrib;
+    attrib.format(1, AttribArrayType::eInt, 0);
+    dots.bindBuffer(1, inst, offsetof(VertexData, show), sizeof(VertexData));
+    dots.enableArrayAttrib(1);
+    dots.setArrayAttrib(1, attrib, 1);
+}
+    
 
     // create shared buffer
     auto inst_ssbo = ShaderStorage<VertexData>(inst);
@@ -111,14 +146,14 @@ int main(void)
     //inst_ssbo.bind();
     prog_cs.bindShaderStorage("UserData", 0, inst_ssbo);
 
-    auto updateBuffer = [prog_cs, inst_ssbo] (float t) {
+    auto updateBuffer = [prog_cs, inst_ssbo] (const glm::ivec3 &worker, float t, const glm::vec3 &pos) {
         prog_cs["time"] = t;
-        prog_cs.dispatchCompute(10, 10, 10);
+        prog_cs["camPos"] = pos;
+        prog_cs["workers"] = worker;
+        prog_cs.dispatchCompute(worker.x, worker.y, worker.z);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     };
     
-
-    updateBuffer(0.f);
     inst.bind();
 
     auto vp_buffer = UniformBuffer<glm::mat4>();
@@ -141,7 +176,7 @@ int main(void)
     axis.getProgram().bindUniformBuffer("UserData", 0, vp_buffer);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -155,12 +190,14 @@ int main(void)
 
         axis.draw();
         l.draw();
-        updateBuffer(glfwGetTime());
+        updateBuffer({25, 25, 25}, glfwGetTime(), cam.getPositon());
         //
         prog.use();
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
-        mesh1.instancedDraw(1000);
+        dots.bind();
+        glDrawArrays(GL_POINTS, 0, 25*25*25);
+        //mesh1.instancedDraw(25*25*25);
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -168,7 +205,7 @@ int main(void)
             updateCamera(window, cam);
     }
     mesh1.release();
-
+    dots.release();
     vp_buffer.unmap();
     vp_buffer.release();
     inst.release();

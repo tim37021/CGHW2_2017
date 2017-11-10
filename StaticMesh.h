@@ -16,8 +16,9 @@ public:
 
 	bool hasNormal() const;
     bool hasUV() const;
-    template <class T>
-    void setInstanceArray(ArrayBuffer<T> inst_arr, uint32_t size, uint32_t offset);
+
+    DrawState &drawState()
+    { return m_drawState; }
 private:
     StaticMesh();
     DrawState m_drawState;
