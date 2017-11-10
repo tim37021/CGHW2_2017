@@ -6,7 +6,7 @@
 #include "Buffer.h"
 
 enum class AttribArrayType {
-    eFloat
+    eFloat, eInt
 };
 
 class ArrayAttrib;

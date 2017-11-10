@@ -1,6 +1,6 @@
 #include "DrawState.h"
 
-static GLenum attrib_array_mapping[] = {GL_FLOAT};
+static GLenum attrib_array_mapping[] = {GL_FLOAT, GL_INT};
 
 AttribBufferBinding::AttribBufferBinding(uint32_t index, const Buffer &buffer)
     : m_index(index), m_divisor(0), m_bufferid(buffer.id())
@@ -52,7 +52,7 @@ void DrawState::setArrayAttrib(uint32_t index, const ArrayAttrib &attrib)
 
     glVertexArrayAttribFormat(m_vao, index, attrib.m_size, attrib_array_mapping[static_cast<int>(attrib.m_type)], GL_FALSE, attrib.m_relativeOffset);
     glVertexArrayAttribBinding(m_vao, index, attrib.m_binding.m_index);
-    glVertexArrayVertexBuffer(m_vao, index, attrib.m_binding.m_bufferid, attrib.m_offset, attrib.m_stride);
+    glVertexArrayVertexBuffer(m_vao, attrib.m_binding.m_index, attrib.m_binding.m_bufferid, attrib.m_offset, attrib.m_stride);
     glVertexArrayBindingDivisor(m_vao, index, attrib.m_binding.m_divisor);
 }
 
