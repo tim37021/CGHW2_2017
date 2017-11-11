@@ -1,13 +1,11 @@
 #version 450
 #pragma shader_stage(fragment)
 
-layout(location=0) out vec4 color;
+layout(early_fragment_tests) in;
 
-layout(location=0) flat in int vShow;
+layout(location=0) out vec4 color;
 
 void main()
 {
-    if(vShow==0)
-        discard;
     color = vec4(1.0);
 }

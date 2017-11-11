@@ -7,10 +7,10 @@ layout(std140, binding=0) uniform UserData {
 	mat4 vp;
 } data;
 
-layout(location=0) out int vShow;
-
 void main()
 {
-	vShow = show;
-	gl_Position=data.vp*vec4(position, 1.0);
+	if(show==1)
+		gl_Position=data.vp*vec4(position, 1.0);
+	else
+		gl_Position=vec4(0, 0, -2, 1.0);
 }

@@ -57,7 +57,7 @@ StaticMesh StaticMesh::LoadMesh(const std::string &filename)
     }
 
     ret.m_indices = ArrayBuffer<GLuint>::CreateFromSTDVector(ArrayBufferType::eIndex, shapes[0].mesh.indices);
-    ret.m_indices.bind();
+    ds.bindElementBuffer(ret.m_indices);
 
     glBindVertexArray(0);
     return ret;
@@ -77,12 +77,14 @@ void StaticMesh::release()
 void StaticMesh::draw()
 {
     m_drawState.bind();
+    m_drawState.bindElementBuffer(m_indices);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
 }
 
 void StaticMesh::instancedDraw(uint32_t num_inst)
 {
     m_drawState.bind();
+    m_drawState.bindElementBuffer(m_indices);
     glDrawElementsInstanced(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr, num_inst);
 }
 

@@ -104,8 +104,8 @@ int main(void)
 
     auto inst = ArrayBuffer<VertexData>(ArrayBufferType::eVertex);
     std::vector<uint8_t> dummy(25*25*25*sizeof(VertexData), 0);
-    inst.allocateElements(AccessLevel::eDeviceLocal, 25*25*25, (const VertexData *)dummy.data());
-/*
+    inst.allocate(AccessLevel::eDeviceLocal, dummy.size(), dummy.data());
+
     auto &ds = mesh1.drawState();
 {
     ArrayAttrib attrib;
@@ -122,8 +122,10 @@ int main(void)
     ds.enableArrayAttrib(4);
     attrib.divisor(1);
     ds.setArrayAttrib(4, attrib, 4);
-}*/
+}
+
     DrawState dots;
+    
 {
     ArrayAttrib attrib;
     attrib.format(3, AttribArrayType::eFloat, 0);
@@ -143,10 +145,11 @@ int main(void)
     // create shared buffer
     auto inst_ssbo = ShaderStorage<VertexData>(inst);
     auto prog_cs = Program::LoadFromFile("../resource/cs.txt");
-    //inst_ssbo.bind();
+    inst_ssbo.bind();
     prog_cs.bindShaderStorage("UserData", 0, inst_ssbo);
 
     auto updateBuffer = [prog_cs, inst_ssbo] (const glm::ivec3 &worker, float t, const glm::vec3 &pos) {
+        inst_ssbo.bind();
         prog_cs["time"] = t;
         prog_cs["camPos"] = pos;
         prog_cs["workers"] = worker;
@@ -196,6 +199,7 @@ int main(void)
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
         dots.bind();
+        inst.bind();
         glDrawArrays(GL_POINTS, 0, 25*25*25);
         //mesh1.instancedDraw(25*25*25);
         ////////////////
@@ -205,7 +209,7 @@ int main(void)
             updateCamera(window, cam);
     }
     mesh1.release();
-    dots.release();
+    //dots.release();
     vp_buffer.unmap();
     vp_buffer.release();
     inst.release();

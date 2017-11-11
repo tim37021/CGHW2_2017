@@ -30,6 +30,7 @@ class DrawState {
 public:
     DrawState();
     void bindBuffer(uint32_t index, const Buffer &buffer, uint32_t offset, uint32_t stride);
+    void bindElementBuffer(const Buffer &buffer);
     void enableArrayAttrib(uint32_t index);
     void disableArrayAttrib(uint32_t index);
     void setArrayAttrib(uint32_t index, const ArrayAttrib &, uint32_t bindingindex);

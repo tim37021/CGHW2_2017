@@ -22,7 +22,7 @@ void ArrayAttrib::format(uint32_t size, AttribArrayType type, uint32_t relative_
 
 DrawState::DrawState()
 {
-    glGenVertexArrays(1, &m_vao);
+    glCreateVertexArrays(1, &m_vao);
 }
 
 void DrawState::bindBuffer(uint32_t index, const Buffer &buffer, uint32_t offset, uint32_t stride)
@@ -40,12 +40,19 @@ void DrawState::release()
     glDeleteVertexArrays(1, &m_vao);
 }
 
+void DrawState::bindElementBuffer(const Buffer &buffer)
+{
+    glVertexArrayElementBuffer(m_vao, buffer.id());
+}
+
 void DrawState::setArrayAttrib(uint32_t index, const ArrayAttrib &attrib, uint32_t bindingindex)
 {
-
-    glVertexArrayAttribFormat(m_vao, index, attrib.m_size, attrib_array_mapping[static_cast<int>(attrib.m_type)], GL_FALSE, attrib.m_relativeOffset);
+    if(attrib.m_type == AttribArrayType::eFloat)
+        glVertexArrayAttribFormat(m_vao, index, attrib.m_size, attrib_array_mapping[static_cast<int>(attrib.m_type)], GL_FALSE, attrib.m_relativeOffset);
+    if(attrib.m_type == AttribArrayType::eInt)
+        glVertexArrayAttribIFormat(m_vao, index, attrib.m_size, attrib_array_mapping[static_cast<int>(attrib.m_type)], attrib.m_relativeOffset);
     glVertexArrayAttribBinding(m_vao, index, bindingindex);
-    glVertexArrayBindingDivisor(m_vao, index, attrib.m_divisor);
+    glVertexArrayBindingDivisor(m_vao, bindingindex, attrib.m_divisor);
 }
 
 void DrawState::enableArrayAttrib(uint32_t index)
