@@ -10,6 +10,7 @@
 #include "StaticMesh.h"
 #include "Texture.h"
 #include "Axis.h"
+#include "Camera.h"
 
 int calcFlat = 0;
 
@@ -27,6 +28,38 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 }
 
+
+static void updateCamera(GLFWwindow *window, Camera &cam) 
+{
+    static double last_time;
+    static double last_x, last_y;
+    static bool hasInitialized = false;
+    if(!hasInitialized) {
+        last_time = glfwGetTime();
+        glfwGetCursorPos(window, &last_x, &last_y);
+        hasInitialized = true;
+    }
+
+    CameraMovement cm = CameraMovement::eStable;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eForward;
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eBackward;
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eLeft;
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) 
+        cm = cm | CameraMovement::eRight;
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    
+    cam.processKeyboard(cm, static_cast<float>(glfwGetTime()-last_time));
+    cam.processMouseMovement(static_cast<float>(x-last_x), static_cast<float>(last_y-y));
+
+    last_x = x;
+    last_y = y;
+    last_time = glfwGetTime();
+}
+
 int main(void)
 {
     glfwSetErrorCallback(error_callback);
@@ -42,6 +75,7 @@ int main(void)
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "Simple example", NULL, NULL);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwMakeContextCurrent(window);
 
@@ -58,9 +92,8 @@ int main(void)
 		std::cerr<<"WARNING: The mesh has no UV data\n";
 	}
 
-    auto view = glm::lookAt(glm::vec3{10.0f, 10.0f, 10.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f});
+    Camera cam;
     auto proj = glm::perspective(glm::pi<float>()/4, 800.0f/600.0f, 0.1f, 100.f);
-    auto vp = prog["vp"] = proj*view;
     prog["text"] = 0;
     auto uniform_model = prog["model"];
 
@@ -77,15 +110,20 @@ int main(void)
         auto model = glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime())
             , glm::vec3(0.0f, 1.0f, 0.0f));
         uniform_model = model;
+
+        glm::mat4 vp = proj * cam.getViewMatrix();
+
         axis.draw(vp);
         l.draw(vp);
         prog.use();
+        prog["vp"] = vp;
         prog["calcFlatNormal"] = calcFlat;
         text.bindToChannel(0);
         mesh1.draw();
         ////////////////
         glfwSwapBuffers(window);
         glfwPollEvents();
+        updateCamera(window, cam);
     }
     mesh1.release();
     prog.release();
